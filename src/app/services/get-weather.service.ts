@@ -6,13 +6,11 @@ import 'rxjs/add/operator/map';
 @Injectable()
 export class GetWeatherService {
 
-	_cities: any;
-
   constructor(private http: Http) {}
 
 	getCities() {
-		this.http.get('data/cities.json')
-			.map(res => this._cities = res.json());
+		return this.http.get('data/cities.json')
+			.map(res => res.json());
   }
 
 	getData() {

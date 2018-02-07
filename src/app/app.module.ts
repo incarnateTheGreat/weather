@@ -3,6 +3,7 @@ import { NgModule } from '@angular/core';
 import { HttpModule } from '@angular/http';
 import { FormsModule } from '@angular/forms';
 import { StoreModule } from '@ngrx/store';
+// import { StoreDevtoolsModule } from '@ngrx/store-devtools';
 
 // Components
 import { AppComponent } from './app.component';
@@ -24,6 +25,9 @@ import { simpleReducer } from './reducers/simple.reducer';
 		HttpModule,
 		FormsModule,
 		StoreModule.forRoot({ cities: simpleReducer })
+		// StoreDevtoolsModule.instrument({
+		// 	maxAge: 18
+		// })
   ],
   providers: [GetWeatherService],
   bootstrap: [AppComponent]
