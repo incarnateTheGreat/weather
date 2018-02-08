@@ -1,6 +1,5 @@
 import { Injectable } from '@angular/core';
 import { Http } from '@angular/http';
-// import * as constants from './constants/constants';
 import 'rxjs/add/operator/map';
 
 @Injectable()
@@ -8,8 +7,8 @@ export class GetWeatherService {
 
   constructor(private http: Http) {}
 
-	getCities() {
-		return this.http.get('data/cities.json')
+	getCities(city, country) {
+		return this.http.get(`http://localhost:8000/api/cities/${city}/${country}`)
 			.map(res => res.json());
   }
 

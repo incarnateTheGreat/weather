@@ -1,4 +1,13 @@
 <section>
 	<input type="text" name="city" placeholder="City" [(ngModel)]="city" />
+	<select name="country" [(ngModel)]="country">
+		<option *ngFor="let country of countries" value={{country}}>{{country}}</option>
+	</select>
 	<button type="submit" (click)="search()">Search</button>
+</section>
+<section>
+	<h2>{{result.name}}</h2>
+	<h3>{{result.country}}</h3>
+	<h4>{{result.lat}}</h4>
+	<h4>{{result.lng}}</h4>
 </section>

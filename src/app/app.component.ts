@@ -1,8 +1,6 @@
 import { Component } from '@angular/core';
 import { Store } from '@ngrx/store';
 
-import { GetWeatherService } from './services/get-weather.service';
-
 interface CityState {
 	cities: object;
 }
@@ -13,15 +11,14 @@ interface CityState {
   styleUrls: ['./app.component.css']
 })
 export class AppComponent {
-	constructor(private store: Store<CityState>,
-							private weather: GetWeatherService) {}
+	constructor(private store: Store<any>) {}
 
 	ngOnInit() {
-		this.weather.getCities().subscribe(result => {
-			this.store.dispatch({
-				type: 'STORE_USER_DATA',
-				data: result
-			});
-		});
+		// this.weather.getCities().subscribe(result => {
+		// 	this.store.dispatch({
+		// 		type: 'STORE_USER_DATA',
+		// 		data: result
+		// 	});
+		// });
 	}
 }

@@ -1,7 +1,15 @@
 import { Component, OnInit } from '@angular/core';
-
 import { Store } from '@ngrx/store';
 import { Observable } from 'rxjs/Observable';
+
+import { GetWeatherService } from '../../services/get-weather.service';
+
+interface CityResult {
+	name: string,
+	country: string,
+	lng: string,
+	lat: string
+}
 
 @Component({
   selector: 'app-search-city',
@@ -9,21 +17,28 @@ import { Observable } from 'rxjs/Observable';
   styleUrls: ['./search-city.component.css']
 })
 export class SearchCityComponent implements OnInit {
-	city: string = '';
+	city: string = 'Toronto';
+	country: string = '';
+	countries: string[] = ['CA', 'US'];
+	result: CityResult = {
+		name: '',
+		country: '',
+		lng: '',
+		lat: ''
+	};
 
-  constructor(private store: Store<any>) {}
+  constructor(private store: Store<any>,
+							private weather: GetWeatherService) {}
 
-  ngOnInit() {
-		// this.store.dispatch({type: 'STORE_CITY_DATA'});
-	}
+  ngOnInit() {}
 
 	search() {
-		// this.weather.getCityData().subscribe(result => {
-		// 	console.log(result)
-		// });
 		// this.store.select('cities').subscribe((data: any) => {
 		// 	console.log(data)
 		// });
-		console.log(this.store.select('cities'))
+
+		this.weather.getCities(this.city, this.country).subscribe(result => {
+			this.result = result[0];
+		});
 	}
 }
