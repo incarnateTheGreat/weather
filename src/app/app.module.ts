@@ -1,6 +1,6 @@
 import { BrowserModule } from '@angular/platform-browser';
 import { NgModule } from '@angular/core';
-import { HttpModule } from '@angular/http';
+import { HttpClientModule } from '@angular/common/http';
 import { FormsModule } from '@angular/forms';
 import { StoreModule } from '@ngrx/store';
 import { StoreDevtoolsModule } from '@ngrx/store-devtools';
@@ -15,6 +15,9 @@ import { SearchCityComponent } from './components/search-city/search-city.compon
 // Reducers
 import { citiesReducer } from './reducers/cities.reducer';
 
+// Interceptor
+import { InterceptorModule } from './interceptor.module';
+
 @NgModule({
   declarations: [
     AppComponent,
@@ -22,7 +25,8 @@ import { citiesReducer } from './reducers/cities.reducer';
   ],
   imports: [
 		BrowserModule,
-		HttpModule,
+		HttpClientModule,
+    InterceptorModule,
 		FormsModule,
 		StoreModule.forRoot({ cities: citiesReducer }),
 		StoreDevtoolsModule.instrument({

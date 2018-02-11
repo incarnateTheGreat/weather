@@ -10,7 +10,6 @@
       "assets": [
         "assets",
         "favicon.ico",
-				"data"
       ],
       "index": "index.html",
       "main": "main.ts",
@@ -20,9 +19,13 @@
       "testTsconfig": "tsconfig.spec.json",
       "prefix": "app",
       "styles": [
-        "styles.css"
+        "sass/styles.scss",
+        "../node_modules/weather-icons/css/weather-icons.css",
+    	"../node_modules/weather-icons/css/weather-icons-wind.css"
       ],
-      "scripts": [],
+      "scripts": [
+        "../node_modules/moment/min/moment.min.js"
+      ],
       "environmentSource": "environments/environment.ts",
       "environments": {
         "dev": "environments/environment.ts",
@@ -55,7 +58,8 @@
     }
   },
   "defaults": {
-    "styleExt": "css",
-    "component": {}
+    "styleExt": "scss",
+    "component": {
+    }
   }
 }

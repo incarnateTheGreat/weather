@@ -6,8 +6,11 @@
 	<button type="submit" (click)="search()">Search</button>
 </section>
 <section>
-	<h2>{{result.name}}</h2>
-	<h3>{{result.country}}</h3>
-	<h4>{{result.lat}}</h4>
-	<h4>{{result.lng}}</h4>
+	<h2>{{result.name}} {{result.country}} {{cityWeather.currently.time}}</h2>
+</section>
+<section>
+	<h3>{{cityWeather.currently.summary}}</h3>
+	<div>
+		<i [class]="weatherIcon(cityWeather.currently.icon)"></i>
+	</div>
 </section>

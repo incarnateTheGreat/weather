@@ -4,21 +4,7 @@ const express = require('express'),
 			cities = require('../data/cities.json');
 
 // Enable cross-origin resource sharing.
-app.use(cors({
-  methods: ['GET', 'POST', 'PUT', 'DELETE'],
-  allowedHeaders: [
-    'Content-Type',
-    'Authorization',
-    'x-requested-withecx',
-    'mode',
-    'x-auth-user-name',
-    'x-correlation-id',
-    'x-source',
-    'userKey'
-  ],
-  credentials: false,
-  preflightContinue: true
-}));
+app.use(cors());
 
 app.listen(8000, () => {
   console.log('Server started!');
