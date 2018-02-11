@@ -5,12 +5,14 @@
 	</select>
 	<button type="submit" (click)="search()">Search</button>
 </section>
-<section>
-	<h2>{{result.name}} {{result.country}} {{cityWeather.currently.time}}</h2>
-</section>
-<section>
-	<h3>{{cityWeather.currently.summary}}</h3>
-	<div>
-		<i [class]="weatherIcon(cityWeather.currently.icon)"></i>
-	</div>
-</section>
+<div *ngIf="isData">
+	<section>
+		<h2>{{result.name}} {{result.country}} {{cityWeather.currently.time}}</h2>
+	</section>
+	<section>
+		<h3>{{cityWeather.currently.summary}} / {{cityWeather.currently.temperature}}&deg;</h3>
+		<div>
+			<i [class]="weatherIcon(cityWeather.currently.icon)"></i>
+		</div>
+	</section>
+</div>

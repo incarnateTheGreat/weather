@@ -14,7 +14,8 @@ interface CityResult {
 
 interface CityWeather {
 	currently?: {
-		time?: any
+		time?: any,
+		temperature?: number
 	}
 }
 
@@ -35,29 +36,27 @@ export class SearchCityComponent implements OnInit {
 	};
 	cityWeather: CityWeather = {
 		currently: {
-			time: null
-		},
+			time: null,
+			temperature: null
+		}
 	};
-	@Input() name: string;
+	isData: boolean = false;
 
   constructor(private store: Store<any>,
-							private weather: GetWeatherService) {
-								 let now = moment(); // add this 2 of 4
-							}
+							private weather: GetWeatherService) {}
 
   ngOnInit() {}
 
 	search() {
-		// this.store.select('cities').subscribe((data: any) => {
-		// 	console.log(data)
-		// });
-
 		this.weather.getCities(this.city, this.country).subscribe(result => {
 			this.result = result[0];
 
 			this.weather.getData(this.result.lat, this.result.lng).subscribe(result => {
 				this.cityWeather = result;
-				this.cityWeather.currently.time = moment.unix(this.cityWeather.currently.time).format("MM/DD/YYYY");
+				this.isData = true;
+
+				this.cityWeather.currently.time = moment.unix(this.cityWeather.currently.time).format("MM/DD/YYYY @ HH:mm");
+				this.cityWeather.currently.temperature = Math.round(this.cityWeather.currently.temperature);
 
 				console.log(this.cityWeather)
 
@@ -69,6 +68,8 @@ export class SearchCityComponent implements OnInit {
     switch (icon) {
       case 'partly-cloudy-day':
         return 'wi wi-day-cloudy'
+			case 'cloudy':
+				return 'wi wi-cloudy';
       case 'clear-day':
         return 'wi wi-day-sunny'
       case 'partly-cloudy-night':

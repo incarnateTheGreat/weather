@@ -12,7 +12,10 @@ export class GetWeatherService {
   }
 
 	getData(lat, lng) {
-    const url = `https://api.darksky.net/forecast/7f5d96ef59f2f0701252f9a1e26c0659/${lat},${lng}`;
+    const apiKey = '7f5d96ef59f2f0701252f9a1e26c0659',
+          exclude = '?exclude=flags',
+          units = '&units=ca',
+          url = `https://api.darksky.net/forecast/${apiKey}/${lat},${lng}${exclude}${units}`;
 
 		return this.http.get(url);
   }
