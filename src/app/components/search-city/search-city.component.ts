@@ -14,8 +14,18 @@ interface CityResult {
 
 interface CityWeather {
 	currently?: {
+		summary?: string,
 		time?: any,
-		temperature?: number
+		icon?: string,
+		temperature?: number,
+		windSpeed?: number,
+		windBearing?: number,
+		windDirection?: string,
+		humidity?: number,
+	},
+	today?: {
+		sunrise?: any,
+		sunset?: any
 	}
 }
 
@@ -36,8 +46,18 @@ export class SearchCityComponent implements OnInit {
 	};
 	cityWeather: CityWeather = {
 		currently: {
+			summary: null,
 			time: null,
-			temperature: null
+			icon: null,
+			temperature: null,
+			windSpeed: null,
+			windBearing: null,
+			windDirection: null,
+			humidity: null
+		},
+		today: {
+			sunrise: null,
+			sunset: null
 		}
 	};
 	isData: boolean = false;
@@ -51,17 +71,36 @@ export class SearchCityComponent implements OnInit {
 		this.weather.getCities(this.city, this.country).subscribe(result => {
 			this.result = result[0];
 
-			this.weather.getData(this.result.lat, this.result.lng).subscribe(result => {
-				this.cityWeather = result;
-				this.isData = true;
+			this.weather.getData(this.result.lat, this.result.lng).subscribe(weatherResult => {
+				if (Object.keys(weatherResult).length > 0) {
+					this.isData = true;
+				} else {
+					return;
+				}
 
-				this.cityWeather.currently.time = moment.unix(this.cityWeather.currently.time).format("MM/DD/YYYY @ HH:mm");
-				this.cityWeather.currently.temperature = Math.round(this.cityWeather.currently.temperature);
-
-				console.log(this.cityWeather)
+				this.cityWeather.currently.time = this.convertUnixDate(weatherResult['currently'].time, true);
+				this.cityWeather.currently.summary = weatherResult['currently'].summary;
+				this.cityWeather.currently.icon = weatherResult['currently'].icon;
+				this.cityWeather.currently.temperature = Math.round(weatherResult['currently'].temperature);
+				this.cityWeather.currently.windSpeed = Math.round(weatherResult['currently'].windSpeed);
+				this.cityWeather.currently.windDirection = this.degToCompass(weatherResult['currently'].windBearing);
+				this.cityWeather.currently.humidity = weatherResult['currently'].humidity * 100;
+				this.cityWeather.today.sunrise = this.convertUnixDate(weatherResult['daily'].data[0].sunriseTime, false);
+				this.cityWeather.today.sunset = this.convertUnixDate(weatherResult['daily'].data[0].sunsetTime, false);
 
 			});
 		});
+	}
+
+	convertUnixDate(unixTimestamp, isFullDate) {
+		const dateFormat = 'MM/DD/YYYY',
+					timeFormat = 'HH:mm';
+
+		if (isFullDate) {
+			return moment.unix(unixTimestamp).format(`${dateFormat} @ ${timeFormat}`);
+		} else {
+			return moment.unix(unixTimestamp).format(`${timeFormat}`);
+		}
 	}
 
 	weatherIcon(icon) {
@@ -70,6 +109,8 @@ export class SearchCityComponent implements OnInit {
         return 'wi wi-day-cloudy'
 			case 'cloudy':
 				return 'wi wi-cloudy';
+			case 'snow':
+				return 'wi wi-snow';
       case 'clear-day':
         return 'wi wi-day-sunny'
       case 'partly-cloudy-night':
@@ -78,4 +119,11 @@ export class SearchCityComponent implements OnInit {
         return null;
     }
   }
+
+	degToCompass(bearing) {
+    const computedVal = Math.floor((bearing / 22.5) + 0.5),
+					directions = ["N", "NNE", "NE", "ENE", "E", "ESE", "SE", "SSE", "S", "SSW", "SW", "WSW", "W", "WNW", "NW", "NNW"];
+
+    return directions[(computedVal % 16)];
+	}
 }
