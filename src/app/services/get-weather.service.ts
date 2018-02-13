@@ -7,7 +7,9 @@ export class GetWeatherService {
 
   constructor(private http: HttpClient) {}
 
-	getCities(city, country) {
+	getCities(cityObj) {
+    const { city, country } = cityObj;
+
 		return this.http.get(`http://localhost:8000/api/cities/${city}/${country}`);
   }
 

@@ -1,7 +1,6 @@
 <section>
-	<input type="text" name="city" placeholder="City" [(ngModel)]="city" />
-	<select name="country" [(ngModel)]="country">
-		<option *ngFor="let country of countries" value={{country}}>{{country}}</option>
+	<select name="city" [(ngModel)]="cityObj">
+		<option *ngFor="let city of cities" [ngValue]="city">{{city.city}}, {{city.country}}</option>
 	</select>
 	<button type="submit" (click)="search()">Search</button>
 </section>
@@ -18,5 +17,10 @@
 		<div>
 			<i [class]="weatherIcon(cityWeather.currently.icon)" title="{{cityWeather.currently.summary}}"></i>
 		</div>
+	</section>
+	<hr />
+	<section>
+		<h2>Today</h2>
+
 	</section>
 </div>

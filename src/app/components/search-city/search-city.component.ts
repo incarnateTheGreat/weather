@@ -36,8 +36,20 @@ interface CityWeather {
 })
 export class SearchCityComponent implements OnInit {
 	city: string = 'Toronto';
-	country: string = '';
-	countries: string[] = ['CA', 'US'];
+	cityObj: Object;
+	cities: Object[] = [{
+		city: 'Toronto',
+		country: 'CA'
+	},{
+		city: 'New York City',
+		country: 'US'
+	},{
+		city: 'Los Angeles',
+		country: 'US'
+	},{
+		city: 'Miami',
+		country: 'US'
+	}];
 	result: CityResult = {
 		name: '',
 		country: '',
@@ -68,10 +80,12 @@ export class SearchCityComponent implements OnInit {
   ngOnInit() {}
 
 	search() {
-		this.weather.getCities(this.city, this.country).subscribe(result => {
+		console.log(this.cityObj)
+		this.weather.getCities(this.cityObj).subscribe(result => {
 			this.result = result[0];
 
 			this.weather.getData(this.result.lat, this.result.lng).subscribe(weatherResult => {
+				console.log(weatherResult)
 				if (Object.keys(weatherResult).length > 0) {
 					this.isData = true;
 				} else {
@@ -85,15 +99,15 @@ export class SearchCityComponent implements OnInit {
 				this.cityWeather.currently.windSpeed = Math.round(weatherResult['currently'].windSpeed);
 				this.cityWeather.currently.windDirection = this.degToCompass(weatherResult['currently'].windBearing);
 				this.cityWeather.currently.humidity = weatherResult['currently'].humidity * 100;
-				this.cityWeather.today.sunrise = this.convertUnixDate(weatherResult['daily'].data[0].sunriseTime, false);
-				this.cityWeather.today.sunset = this.convertUnixDate(weatherResult['daily'].data[0].sunsetTime, false);
+				this.cityWeather.today.sunrise = this.convertUnixDate(weatherResult['daily'].data[0].sunriseTime);
+				this.cityWeather.today.sunset = this.convertUnixDate(weatherResult['daily'].data[0].sunsetTime);
 
 			});
 		});
 	}
 
-	convertUnixDate(unixTimestamp, isFullDate) {
-		const dateFormat = 'MM/DD/YYYY',
+	convertUnixDate(unixTimestamp, isFullDate = false) {
+		const dateFormat = 'MMM DD, YYYY',
 					timeFormat = 'HH:mm';
 
 		if (isFullDate) {
@@ -122,7 +136,7 @@ export class SearchCityComponent implements OnInit {
 
 	degToCompass(bearing) {
     const computedVal = Math.floor((bearing / 22.5) + 0.5),
-					directions = ["N", "NNE", "NE", "ENE", "E", "ESE", "SE", "SSE", "S", "SSW", "SW", "WSW", "W", "WNW", "NW", "NNW"];
+					directions = ['N', 'NNE', 'NE', 'ENE', 'E', 'ESE', 'SE', 'SSE', 'S', 'SSW', 'SW', 'WSW', 'W', 'WNW', 'NW', 'NNW'];
 
     return directions[(computedVal % 16)];
 	}
