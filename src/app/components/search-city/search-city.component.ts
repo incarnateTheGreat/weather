@@ -13,7 +13,7 @@ interface CityResult {
 }
 
 interface CityWeather {
-	currently?: {
+	today?: {
 		summary?: string,
 		time?: any,
 		icon?: string,
@@ -70,7 +70,7 @@ export class SearchCityComponent implements OnInit {
 		lat: ''
 	};
 	cityWeather: CityWeather = {
-		currently: {
+		today: {
 			summary: null,
 			time: null,
 			icon: null,
@@ -99,6 +99,7 @@ export class SearchCityComponent implements OnInit {
 		}
 	};
 	isData: boolean = false;
+	longTermForecast: any[];
 
   constructor(private store: Store<any>,
 							private weather: GetWeatherService) {}
@@ -119,40 +120,39 @@ export class SearchCityComponent implements OnInit {
 				const today = weatherResult['currently'],
 							tomorrow = weatherResult['daily']['data'][1];
 
-				this.cityWeather.currently.time = this.convertUnixDate(today.time, true);
-				this.cityWeather.currently.summary = today.summary;
-				this.cityWeather.currently.icon = today.icon;
-				this.cityWeather.currently.temperature = Math.round(today.temperature);
-				this.cityWeather.currently.windSpeed = Math.round(today.windSpeed);
-				this.cityWeather.currently.windDirection = this.degToCompass(today.windBearing);
-				this.cityWeather.currently.humidity = today.humidity * 100;
-				this.cityWeather.currently.sunriseSunset.sunrise = this.convertUnixDate(weatherResult['daily'].data[0].sunriseTime);
-				this.cityWeather.currently.sunriseSunset.sunset = this.convertUnixDate(weatherResult['daily'].data[0].sunsetTime);
+				this.longTermForecast = weatherResult['daily']['data'].slice(2, weatherResult['daily']['data'].length);
 
-				console.log(weatherResult['daily']['data'][1])
+				// Today/Current
+				this.cityWeather.today.time = this.convertUnixDate(today.time, 'MMM DD, YYYY');
+				this.cityWeather.today.summary = today.summary;
+				this.cityWeather.today.icon = today.icon;
+				this.cityWeather.today.temperature = Math.round(today.temperature);
+				this.cityWeather.today.windSpeed = Math.round(today.windSpeed);
+				this.cityWeather.today.windDirection = this.degToCompass(today.windBearing);
+				this.cityWeather.today.humidity = today.humidity * 100;
+				this.cityWeather.today.sunriseSunset.sunrise = this.convertUnixDate(weatherResult['daily'].data[0].sunriseTime, 'HH:mm');
+				this.cityWeather.today.sunriseSunset.sunset = this.convertUnixDate(weatherResult['daily'].data[0].sunsetTime, 'HH:mm');
 
+				// Tomorrow
 				this.cityWeather.tomorrow.summary = tomorrow.summary;
 				this.cityWeather.tomorrow.icon = tomorrow.icon;
 				this.cityWeather.tomorrow.temperature = Math.round(tomorrow.temperatureHigh);
 				this.cityWeather.tomorrow.windSpeed = Math.round(tomorrow.windSpeed);
 				this.cityWeather.tomorrow.windDirection = this.degToCompass(today.windBearing);
 				this.cityWeather.tomorrow.humidity = tomorrow.humidity * 100;
-				this.cityWeather.tomorrow.sunriseSunset.sunrise = this.convertUnixDate(weatherResult['daily'].data[1].sunriseTime);
-				this.cityWeather.tomorrow.sunriseSunset.sunset = this.convertUnixDate(weatherResult['daily'].data[1].sunsetTime);
+				this.cityWeather.tomorrow.sunriseSunset.sunrise = this.convertUnixDate(weatherResult['daily'].data[1].sunriseTime, 'HH:mm');
+				this.cityWeather.tomorrow.sunriseSunset.sunset = this.convertUnixDate(weatherResult['daily'].data[1].sunsetTime, 'HH:mm');
 
+				// 7-Day forecast
+				this.longTermForecast.forEach((e) => {
+					console.log(e)
+				});
 			});
 		});
 	}
 
-	convertUnixDate(unixTimestamp, isFullDate = false) {
-		const dateFormat = 'MMM DD, YYYY',
-					timeFormat = 'HH:mm';
-
-		if (isFullDate) {
-			return moment.unix(unixTimestamp).format(`${dateFormat} @ ${timeFormat}`);
-		} else {
-			return moment.unix(unixTimestamp).format(`${timeFormat}`);
-		}
+	convertUnixDate(unixTimestamp, format) {
+		return moment.unix(unixTimestamp).format(`${format}`);
 	}
 
 	weatherIcon(icon) {
@@ -165,6 +165,8 @@ export class SearchCityComponent implements OnInit {
 				return 'wi wi-cloudy';
 			case 'fog':
 				return 'wi wi-fog';
+			case 'wind':
+				return 'wi wi-day-windy';
 			case 'snow':
 				return 'wi wi-snow';
       case 'clear-day':

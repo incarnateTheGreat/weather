@@ -8,14 +8,14 @@
 	<h1 *ngIf="isData">{{result.name}}</h1>
 	<div class="_search-city-containers">
 		<div *ngIf="isData" class="_search-city-containers__container">
-			<h2>{{cityWeather.currently.time}}</h2>
+			<h2>{{cityWeather.today.time}}</h2>
 			<section>
-				<h3>{{cityWeather.currently.summary}} / {{cityWeather.currently.temperature}}&deg; /
-						{{cityWeather.currently.windSpeed}} km/h {{cityWeather.currently.windDirection}}</h3>
-				<h3>Humidity: {{cityWeather.currently.humidity}}%</h3>
-				<h3>Sunrise: {{cityWeather.currently.sunriseSunset.sunrise}} EST</h3>
-				<h3>Sunset: {{cityWeather.currently.sunriseSunset.sunset}} EST</h3>
-				<i [class]="weatherIcon(cityWeather.currently.icon)" title="{{cityWeather.currently.summary}}"></i>
+				<h3>{{cityWeather.today.summary}} / {{cityWeather.today.temperature}}&deg; /
+						{{cityWeather.today.windSpeed}} km/h {{cityWeather.today.windDirection}}</h3>
+				<h3>Humidity: {{cityWeather.today.humidity}}%</h3>
+				<h3>Sunrise: {{cityWeather.today.sunriseSunset.sunrise}} EST</h3>
+				<h3>Sunset: {{cityWeather.today.sunriseSunset.sunset}} EST</h3>
+				<i [class]="weatherIcon(cityWeather.today.icon)" title="{{cityWeather.today.summary}}"></i>
 			</section>
 		</div>
 		<div *ngIf="isData" class="_search-city-containers__container">
@@ -31,41 +31,11 @@
 		</div>
 	</div>
 	<div class="_search-city__days">
-		<div class="_search-city-days__day">
-			<div class="_search-city-days_day__day">Monday</div>
-			<div class="_search-city-days_day__summary">Partly Cloudy</div>
-			<div class="_search-city-days_day__icon">(icon)</div>
-			<div class="_search-city-days_day__temperature">8 deg.</div>
-		</div>
-		<div class="_search-city-days__day">
-			<div class="_search-city-days_day__day">Monday</div>
-			<div class="_search-city-days_day__summary">Partly Cloudy</div>
-			<div class="_search-city-days_day__icon">(icon)</div>
-			<div class="_search-city-days_day__temperature">8 deg.</div>
-		</div>
-		<div class="_search-city-days__day">
-			<div class="_search-city-days_day__day">Monday</div>
-			<div class="_search-city-days_day__summary">Partly Cloudy</div>
-			<div class="_search-city-days_day__icon">(icon)</div>
-			<div class="_search-city-days_day__temperature">8 deg.</div>
-		</div>
-		<div class="_search-city-days__day">
-			<div class="_search-city-days_day__day">Monday</div>
-			<div class="_search-city-days_day__summary">Partly Cloudy</div>
-			<div class="_search-city-days_day__icon">(icon)</div>
-			<div class="_search-city-days_day__temperature">8 deg.</div>
-		</div>
-		<div class="_search-city-days__day">
-			<div class="_search-city-days_day__day">Monday</div>
-			<div class="_search-city-days_day__summary">Partly Cloudy</div>
-			<div class="_search-city-days_day__icon">(icon)</div>
-			<div class="_search-city-days_day__temperature">8 deg.</div>
-		</div>
-		<div class="_search-city-days__day">
-			<div class="_search-city-days_day__day">Monday</div>
-			<div class="_search-city-days_day__summary">Partly Cloudy</div>
-			<div class="_search-city-days_day__icon">(icon)</div>
-			<div class="_search-city-days_day__temperature">8 deg.</div>
+		<div class="_search-city-days__day" *ngFor='let day of longTermForecast'>
+			<div class="_search-city-days_day__day">{{convertUnixDate(day.time, 'dddd')}}</div>
+			<div class="_search-city-days_day__summary">{{day.summary}}</div>
+			<div class="_search-city-days_day__icon"><i [class]="weatherIcon(day.icon)" title="{{day.summary}}"></i></div>
+			<div class="_search-city-days_day__temperature">{{day.temperatureHigh}}</div>
 		</div>
 	</div>
 </div>

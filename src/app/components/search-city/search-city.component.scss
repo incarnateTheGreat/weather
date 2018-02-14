@@ -39,6 +39,24 @@
       display: flex;
       flex-direction: column;
       width: 20%;
+
+      ._search-city-days_day__day {
+        font-size: 18px;
+        font-weight: bold;
+      }
+
+      ._search-city-days_day__summary {
+        padding: 10px 0;
+        text-align: center;
+      }
+
+      ._search-city-days_day__icon {
+        margin: 10px 0;
+
+        .wi {
+          font-size: 28px;
+        }
+      }
     }
   }
 
