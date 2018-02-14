@@ -5,11 +5,10 @@
 		</select>
 		<button type="submit" (click)="search()">Search</button>
 	</section>
+	<h1 *ngIf="isData">{{result.name}}</h1>
 	<div class="_search-city-containers">
-		<div *ngIf="isData" class="container">
-			<section>
-				<h1>{{result.name}} {{result.country}} {{cityWeather.currently.time}}</h1>
-			</section>
+		<div *ngIf="isData" class="_search-city-containers__container">
+			<h2>{{cityWeather.currently.time}}</h2>
 			<section>
 				<h3>{{cityWeather.currently.summary}} / {{cityWeather.currently.temperature}}&deg; /
 						{{cityWeather.currently.windSpeed}} km/h {{cityWeather.currently.windDirection}}</h3>
@@ -19,19 +18,54 @@
 				<i [class]="weatherIcon(cityWeather.currently.icon)" title="{{cityWeather.currently.summary}}"></i>
 			</section>
 		</div>
-		<div *ngIf="isData" class="container">
+		<div *ngIf="isData" class="_search-city-containers__container">
 			<section>
 				<h1>Tomorrow</h1>
-
-				<section>
-					<h3>{{cityWeather.tomorrow.summary}} / {{cityWeather.tomorrow.temperature}}&deg; /
-							{{cityWeather.tomorrow.windSpeed}} km/h {{cityWeather.tomorrow.windDirection}}</h3>
-					<h3>Humidity: {{cityWeather.tomorrow.humidity}}%</h3>
-					<h3>Sunrise: {{cityWeather.tomorrow.sunriseSunset.sunrise}} EST</h3>
-					<h3>Sunset: {{cityWeather.tomorrow.sunriseSunset.sunset}} EST</h3>
-					<i [class]="weatherIcon(cityWeather.tomorrow.icon)" title="{{cityWeather.tomorrow.summary}}"></i>
-				</section>
+				<h3>{{cityWeather.tomorrow.summary}} / {{cityWeather.tomorrow.temperature}}&deg; /
+						{{cityWeather.tomorrow.windSpeed}} km/h {{cityWeather.tomorrow.windDirection}}</h3>
+				<h3>Humidity: {{cityWeather.tomorrow.humidity}}%</h3>
+				<h3>Sunrise: {{cityWeather.tomorrow.sunriseSunset.sunrise}} EST</h3>
+				<h3>Sunset: {{cityWeather.tomorrow.sunriseSunset.sunset}} EST</h3>
+				<i [class]="weatherIcon(cityWeather.tomorrow.icon)" title="{{cityWeather.tomorrow.summary}}"></i>
 			</section>
+		</div>
+	</div>
+	<div class="_search-city__days">
+		<div class="_search-city-days__day">
+			<div class="_search-city-days_day__day">Monday</div>
+			<div class="_search-city-days_day__summary">Partly Cloudy</div>
+			<div class="_search-city-days_day__icon">(icon)</div>
+			<div class="_search-city-days_day__temperature">8 deg.</div>
+		</div>
+		<div class="_search-city-days__day">
+			<div class="_search-city-days_day__day">Monday</div>
+			<div class="_search-city-days_day__summary">Partly Cloudy</div>
+			<div class="_search-city-days_day__icon">(icon)</div>
+			<div class="_search-city-days_day__temperature">8 deg.</div>
+		</div>
+		<div class="_search-city-days__day">
+			<div class="_search-city-days_day__day">Monday</div>
+			<div class="_search-city-days_day__summary">Partly Cloudy</div>
+			<div class="_search-city-days_day__icon">(icon)</div>
+			<div class="_search-city-days_day__temperature">8 deg.</div>
+		</div>
+		<div class="_search-city-days__day">
+			<div class="_search-city-days_day__day">Monday</div>
+			<div class="_search-city-days_day__summary">Partly Cloudy</div>
+			<div class="_search-city-days_day__icon">(icon)</div>
+			<div class="_search-city-days_day__temperature">8 deg.</div>
+		</div>
+		<div class="_search-city-days__day">
+			<div class="_search-city-days_day__day">Monday</div>
+			<div class="_search-city-days_day__summary">Partly Cloudy</div>
+			<div class="_search-city-days_day__icon">(icon)</div>
+			<div class="_search-city-days_day__temperature">8 deg.</div>
+		</div>
+		<div class="_search-city-days__day">
+			<div class="_search-city-days_day__day">Monday</div>
+			<div class="_search-city-days_day__summary">Partly Cloudy</div>
+			<div class="_search-city-days_day__icon">(icon)</div>
+			<div class="_search-city-days_day__temperature">8 deg.</div>
 		</div>
 	</div>
 </div>

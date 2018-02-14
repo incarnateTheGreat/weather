@@ -12,7 +12,7 @@
       flex-direction: column;
     }
 
-    .container {
+    ._search-city-containers__container {
       padding: 10px 0;
       width: 50%;
 
@@ -20,9 +20,26 @@
         width: 100%;
       }
 
+      .wi {
+        margin: 10px 0;
+      }
+
       &:last-child {
         border: none;
       }
     }
   }
+
+  ._search-city__days {
+    display: flex;
+
+    ._search-city-days__day {
+      align-items: center;
+      border: 1px solid blue;
+      display: flex;
+      flex-direction: column;
+      width: 20%;
+    }
+  }
+
 }
