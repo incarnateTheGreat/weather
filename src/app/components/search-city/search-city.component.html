@@ -35,7 +35,10 @@
 			<div class="_search-city-days_day__day">{{convertUnixDate(day.time, 'dddd')}}</div>
 			<div class="_search-city-days_day__summary">{{day.summary}}</div>
 			<div class="_search-city-days_day__icon"><i [class]="weatherIcon(day.icon)" title="{{day.summary}}"></i></div>
-			<div class="_search-city-days_day__temperature">{{day.temperatureHigh}}</div>
+			<div class="_search-city-days_day__temperature">
+				<span>{{roundFigures(day.temperatureHigh)}}</span>&deg; /
+				<span>{{roundFigures(day.temperatureLow)}}</span>&deg;
+			</div>
 		</div>
 	</div>
 </div>

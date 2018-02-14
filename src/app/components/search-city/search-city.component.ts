@@ -126,8 +126,8 @@ export class SearchCityComponent implements OnInit {
 				this.cityWeather.today.time = this.convertUnixDate(today.time, 'MMM DD, YYYY');
 				this.cityWeather.today.summary = today.summary;
 				this.cityWeather.today.icon = today.icon;
-				this.cityWeather.today.temperature = Math.round(today.temperature);
-				this.cityWeather.today.windSpeed = Math.round(today.windSpeed);
+				this.cityWeather.today.temperature = this.roundFigures(today.temperature);
+				this.cityWeather.today.windSpeed = this.roundFigures(today.windSpeed);
 				this.cityWeather.today.windDirection = this.degToCompass(today.windBearing);
 				this.cityWeather.today.humidity = today.humidity * 100;
 				this.cityWeather.today.sunriseSunset.sunrise = this.convertUnixDate(weatherResult['daily'].data[0].sunriseTime, 'HH:mm');
@@ -136,8 +136,8 @@ export class SearchCityComponent implements OnInit {
 				// Tomorrow
 				this.cityWeather.tomorrow.summary = tomorrow.summary;
 				this.cityWeather.tomorrow.icon = tomorrow.icon;
-				this.cityWeather.tomorrow.temperature = Math.round(tomorrow.temperatureHigh);
-				this.cityWeather.tomorrow.windSpeed = Math.round(tomorrow.windSpeed);
+				this.cityWeather.tomorrow.temperature = this.roundFigures(tomorrow.temperatureHigh);
+				this.cityWeather.tomorrow.windSpeed = this.roundFigures(tomorrow.windSpeed);
 				this.cityWeather.tomorrow.windDirection = this.degToCompass(today.windBearing);
 				this.cityWeather.tomorrow.humidity = tomorrow.humidity * 100;
 				this.cityWeather.tomorrow.sunriseSunset.sunrise = this.convertUnixDate(weatherResult['daily'].data[1].sunriseTime, 'HH:mm');
@@ -149,6 +149,10 @@ export class SearchCityComponent implements OnInit {
 				});
 			});
 		});
+	}
+
+	roundFigures(num) {
+		return Math.round(num);
 	}
 
 	convertUnixDate(unixTimestamp, format) {
@@ -165,6 +169,8 @@ export class SearchCityComponent implements OnInit {
 				return 'wi wi-cloudy';
 			case 'fog':
 				return 'wi wi-fog';
+			case 'rain':
+				return 'wi wi-rain';
 			case 'wind':
 				return 'wi wi-day-windy';
 			case 'snow':
