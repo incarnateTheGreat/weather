@@ -1,0 +1,28 @@
+@import "~sass/styles";
+
+.search-city {
+  padding: 5px;
+
+  ._search-city__header {}
+
+  ._search-city-containers {
+    display: flex;
+
+    @include respond-to(sm-max) {
+      flex-direction: column;
+    }
+
+    .container {
+      padding: 10px 0;
+      width: 50%;
+
+      @include respond-to(sm-max) {
+        width: 100%;
+      }
+
+      &:last-child {
+        border: none;
+      }
+    }
+  }
+}
