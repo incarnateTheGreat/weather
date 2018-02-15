@@ -1,6 +1,6 @@
 import { Component, Input, OnInit } from '@angular/core';
 import { Store } from '@ngrx/store';
-import { Observable } from 'rxjs/Observable';
+import { Observable } from 'rxjs/Rx';
 import * as moment from 'moment';
 
 import { GetWeatherService } from '../../services/get-weather.service';
@@ -100,13 +100,31 @@ export class SearchCityComponent implements OnInit {
 	};
 	isData: boolean = false;
 	longTermForecast: any[];
+	timer: Observable<any>;
+	updateInterval: any
 
   constructor(private store: Store<any>,
 							private weather: GetWeatherService) {}
 
   ngOnInit() {}
 
+	activateInterval() {
+	  this.timer = Observable.timer(0, 60000 * 5);
+
+		// Updates the Weather Data automatically every five minutes.
+	  this.updateInterval = this.timer.subscribe(x => {
+	    this.search();
+	  });
+	}
+
+	deactivateInterval() {
+		this.updateInterval.unsubscribe();
+	}
+
 	search() {
+		// Activate the Update Interval.
+		if (!this.updateInterval) this.activateInterval();
+
 		this.weather.getCities(this.cityObj).subscribe(result => {
 			this.result = result[0];
 
@@ -123,7 +141,7 @@ export class SearchCityComponent implements OnInit {
 				this.longTermForecast = weatherResult['daily']['data'].slice(2, weatherResult['daily']['data'].length);
 
 				// Today/Current
-				this.cityWeather.today.time = this.convertUnixDate(today.time, 'MMM DD, YYYY');
+				this.cityWeather.today.time = this.convertUnixDate(today.time, 'MMM DD, YYYY @ HH:mm');
 				this.cityWeather.today.summary = today.summary;
 				this.cityWeather.today.icon = today.icon;
 				this.cityWeather.today.temperature = this.roundFigures(today.temperature);

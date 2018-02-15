@@ -7,9 +7,17 @@
     padding: 10px;
   }
 
-  h1 {
-    font-size: $font-size-header-h1;
+  ._search-city__title-date {
     padding: 10px;
+
+    h1 {
+      font-size: $font-size-header-h1;
+    }
+    h4 {
+      span {
+        font-weight: bold;
+      }
+    }
   }
 
   ._search-city-containers {

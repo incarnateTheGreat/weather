@@ -4,7 +4,10 @@
 			<option *ngFor="let city of cities" [ngValue]="city">{{city.city}}, {{city.country}}</option>
 		</select>
 	</section>
-	<h1 *ngIf="isData">{{result.name}}</h1>
+	<div *ngIf="isData" class="_search-city__title-date">
+		<h1>{{result.name}}</h1>
+		<h4>As of <span>{{cityWeather.today.time}}</span></h4>
+	</div>
 	<div *ngIf="isData" class="_search-city-containers">
 		<section *ngIf="isData" class="_search-city-containers__container">
 			<div class="_search-city-containers-container__content">
