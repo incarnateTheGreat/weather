@@ -123,7 +123,12 @@ export class SearchCityComponent implements OnInit {
 
 	search() {
 		// Activate the Update Interval.
-		if (!this.updateInterval) this.activateInterval();
+		if (!this.updateInterval) {
+			this.activateInterval();
+		} else {
+			this.deactivateInterval();
+			this.activateInterval();
+		}
 
 		this.weather.getCities(this.cityObj).subscribe(result => {
 			this.result = result[0];
