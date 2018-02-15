@@ -142,11 +142,6 @@ export class SearchCityComponent implements OnInit {
 				this.cityWeather.tomorrow.humidity = tomorrow.humidity * 100;
 				this.cityWeather.tomorrow.sunriseSunset.sunrise = this.convertUnixDate(weatherResult['daily'].data[1].sunriseTime, 'HH:mm');
 				this.cityWeather.tomorrow.sunriseSunset.sunset = this.convertUnixDate(weatherResult['daily'].data[1].sunsetTime, 'HH:mm');
-
-				// 7-Day forecast
-				this.longTermForecast.forEach((e) => {
-					console.log(e)
-				});
 			});
 		});
 	}
