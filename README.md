@@ -4,6 +4,8 @@
 
 To operate the application, you must have `Angular 4` installed on your system. To install, go to [Angular 4](https://cli.angular.io/) for instructions on how to get started.
 
+This application utilizes the [Dark Sky API](https://darksky.net/dev) to gather weather data.
+
 ## Installation
 
 Prior to running the Development Server, you must download the latest dependencies for this project. You will need [Node](https://nodejs.org/en/) and [NPM](https://docs.npmjs.com/getting-started/installing-node).
