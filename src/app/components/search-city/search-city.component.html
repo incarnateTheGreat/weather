@@ -1,9 +1,8 @@
 <div class="search-city">
 	<section class="_search-city__header">
-		<select name="city" [(ngModel)]="cityObj">
+		<select name="city" [(ngModel)]="cityObj" (change)="search()">
 			<option *ngFor="let city of cities" [ngValue]="city">{{city.city}}, {{city.country}}</option>
 		</select>
-		<button type="submit" (click)="search()">Search</button>
 	</section>
 	<h1 *ngIf="isData">{{result.name}}</h1>
 	<div *ngIf="isData" class="_search-city-containers">
