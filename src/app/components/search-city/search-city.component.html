@@ -6,16 +6,19 @@
 		<button type="submit" (click)="search()">Search</button>
 	</section>
 	<h1 *ngIf="isData">{{result.name}}</h1>
-	<div class="_search-city-containers">
+	<div *ngIf="isData" class="_search-city-containers">
 		<section *ngIf="isData" class="_search-city-containers__container">
 			<div class="_search-city-containers-container__content">
 				<div>
 					<h2>Today</h2>
-					<h3>{{cityWeather.today.summary}} / {{cityWeather.today.temperature}}&deg; /
-							{{cityWeather.today.windSpeed}} km/h {{cityWeather.today.windDirection}}</h3>
-					<h3>Humidity: {{cityWeather.today.humidity}}%</h3>
-					<h3>Sunrise: {{cityWeather.today.sunriseSunset.sunrise}} EST</h3>
-					<h3>Sunset: {{cityWeather.today.sunriseSunset.sunset}} EST</h3>
+					<h3>{{cityWeather.today.summary}}</h3>
+					<div class="_search-city-containers-container-content__details">
+						<h3><span>Temperature:</span> {{cityWeather.today.temperature}}&deg;</h3>
+						<h3><span>Wind:</span> {{cityWeather.today.windSpeed}} km/h {{cityWeather.today.windDirection}}</h3>
+						<h3><span>Humidity:</span> {{cityWeather.today.humidity}}%</h3>
+						<h3><span>Sunrise:</span> {{cityWeather.today.sunriseSunset.sunrise}} EST</h3>
+						<h3><span>Sunset:</span> {{cityWeather.today.sunriseSunset.sunset}} EST</h3>
+					</div>
 				</div>
 				<i [class]="weatherIcon(cityWeather.today.icon)" title="{{cityWeather.today.summary}}"></i>
 			</div>
@@ -24,11 +27,14 @@
 			<div class="_search-city-containers-container__content">
 				<div>
 					<h2>Tomorrow</h2>
-					<h3>{{cityWeather.tomorrow.summary}} / {{cityWeather.tomorrow.temperature}}&deg; /
-							{{cityWeather.tomorrow.windSpeed}} km/h {{cityWeather.tomorrow.windDirection}}</h3>
-					<h3>Humidity: {{cityWeather.tomorrow.humidity}}%</h3>
-					<h3>Sunrise: {{cityWeather.tomorrow.sunriseSunset.sunrise}} EST</h3>
-					<h3>Sunset: {{cityWeather.tomorrow.sunriseSunset.sunset}} EST</h3>
+					<h3>{{cityWeather.tomorrow.summary}}</h3>
+					<div class="_search-city-containers-container-content__details">
+						<h3><span>Temperature:</span> {{cityWeather.tomorrow.temperature}}&deg;</h3>
+						<h3><span>Wind:</span> {{cityWeather.tomorrow.windSpeed}} km/h {{cityWeather.tomorrow.windDirection}}</h3>
+						<h3><span>Humidity:</span> {{cityWeather.tomorrow.humidity}}%</h3>
+						<h3><span>Sunrise:</span> {{cityWeather.tomorrow.sunriseSunset.sunrise}} EST</h3>
+						<h3><span>Sunset:</span> {{cityWeather.tomorrow.sunriseSunset.sunset}} EST</h3>
+					</div>
 				</div>
 				<i [class]="weatherIcon(cityWeather.tomorrow.icon)" title="{{cityWeather.tomorrow.summary}}"></i>
 			</div>

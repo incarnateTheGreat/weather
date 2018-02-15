@@ -8,7 +8,7 @@
   }
 
   h1 {
-    font-size: 3em;
+    font-size: $font-size-header-h1;
     padding: 10px;
   }
 
@@ -26,7 +26,6 @@
       width: 50%;
 
       @include respond-to(sm-max) {
-        // flex-direction: column;
         width: 100%;
       }
 
@@ -36,17 +35,36 @@
         width: 100%;
 
         >:first-child {
-          // width: 30%;
+          width: 50%;
+        }
 
-          @include respond-to(sm-max) {
-            width: 50%;
+        h2 {
+          font-weight: bold;
+        }
+
+        ._search-city-containers-container-content__details {
+          margin: 10px 0 0;
+
+          h3 {
+            display: flex;
+
+            span {
+              font-weight: bold;
+              min-width: 120px;
+            }
+          }
+
+          >:first-child {
+            @include respond-to(sm-max) {
+              width: 50%;
+            }
           }
         }
 
         .wi {
           align-items: center;
           display: flex;
-          font-size: 48px;
+          font-size: $font-size-wi;
           padding: 0 50px 0 0;
         }
       }
@@ -54,18 +72,22 @@
   }
 
   ._search-city__days {
+    border-top: 1px solid $light-grey;
     display: flex;
 
     ._search-city-days__day {
       align-items: center;
-      border: 1px solid blue;
       display: flex;
       flex-direction: column;
       padding: 10px 0;
       width: 20%;
 
+      @include respond-to(sm-max) {
+        width: 33%;
+      }
+
       ._search-city-days_day__day {
-        font-size: 18px;
+        font-size: $font-size-medium;
         font-weight: bold;
       }
 
@@ -83,7 +105,7 @@
         min-height: 50px;
 
         .wi {
-          font-size: 28px;
+          font-size: $font-size-wi-small;
         }
       }
 
@@ -94,7 +116,7 @@
         min-height: 30px;
 
         span {
-          font-size: 16px;
+          font-size: $font-size-medium;
         }
       }
     }
