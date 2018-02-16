@@ -28,6 +28,7 @@
     "cors": "^2.8.4",
     "express": "^4.16.2",
     "moment": "^2.20.1",
+    "ngx-loading": "^1.0.14",
     "rxjs": "^5.4.2",
     "weather-icons": "git+https://github.com/erikflowers/weather-icons.git",
     "zone.js": "^0.8.14"

@@ -4,6 +4,7 @@ import { HttpClientModule } from '@angular/common/http';
 import { FormsModule } from '@angular/forms';
 import { StoreModule } from '@ngrx/store';
 import { StoreDevtoolsModule } from '@ngrx/store-devtools';
+import { LoadingModule } from 'ngx-loading';
 
 // Components
 import { AppComponent } from './app.component';
@@ -31,7 +32,8 @@ import { InterceptorModule } from './interceptor.module';
 		StoreModule.forRoot({ cities: citiesReducer }),
 		StoreDevtoolsModule.instrument({
 			maxAge: 18
-		})
+		}),
+    LoadingModule
   ],
   providers: [GetWeatherService],
   bootstrap: [AppComponent]

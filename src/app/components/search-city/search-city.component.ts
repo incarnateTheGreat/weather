@@ -101,7 +101,8 @@ export class SearchCityComponent implements OnInit {
 	isData: boolean = false;
 	longTermForecast: any[];
 	timer: Observable<any>;
-	updateInterval: any
+	updateInterval: any = null;
+	loading: boolean = false;
 
   constructor(private store: Store<any>,
 							private weather: GetWeatherService) {}
@@ -121,52 +122,59 @@ export class SearchCityComponent implements OnInit {
 		this.updateInterval.unsubscribe();
 	}
 
-	search() {
-		// Activate the Update Interval.
-		if (!this.updateInterval) {
-			this.activateInterval();
-		} else {
+	fireSearch() {
+		if (this.updateInterval) {
 			this.deactivateInterval();
 			this.activateInterval();
+		} else {
+			this.activateInterval();
 		}
+	}
 
-		this.weather.getCities(this.cityObj).subscribe(result => {
-			this.result = result[0];
+	search() {
+		this.loading = true;
 
-			this.weather.getData(this.result.lat, this.result.lng).subscribe(weatherResult => {
-				if (Object.keys(weatherResult).length > 0) {
-					this.isData = true;
-				} else {
-					return;
-				}
+		setTimeout(() => {
+			this.weather.getCities(this.cityObj).subscribe(result => {
+				this.result = result[0];
 
-				const today = weatherResult['currently'],
-							tomorrow = weatherResult['daily']['data'][1];
+				this.weather.getData(this.result.lat, this.result.lng).subscribe(weatherResult => {
+					this.loading = false;
 
-				this.longTermForecast = weatherResult['daily']['data'].slice(2, weatherResult['daily']['data'].length);
+					if (Object.keys(weatherResult).length > 0) {
+						this.isData = true;
+					} else {
+						return;
+					}
 
-				// Today/Current
-				this.cityWeather.today.time = this.convertUnixDate(today.time, 'MMM DD, YYYY @ HH:mm');
-				this.cityWeather.today.summary = today.summary;
-				this.cityWeather.today.icon = today.icon;
-				this.cityWeather.today.temperature = this.roundFigures(today.temperature);
-				this.cityWeather.today.windSpeed = this.roundFigures(today.windSpeed);
-				this.cityWeather.today.windDirection = this.degToCompass(today.windBearing);
-				this.cityWeather.today.humidity = today.humidity * 100;
-				this.cityWeather.today.sunriseSunset.sunrise = this.convertUnixDate(weatherResult['daily'].data[0].sunriseTime, 'HH:mm');
-				this.cityWeather.today.sunriseSunset.sunset = this.convertUnixDate(weatherResult['daily'].data[0].sunsetTime, 'HH:mm');
+					const today = weatherResult['currently'],
+								tomorrow = weatherResult['daily']['data'][1];
 
-				// Tomorrow
-				this.cityWeather.tomorrow.summary = tomorrow.summary;
-				this.cityWeather.tomorrow.icon = tomorrow.icon;
-				this.cityWeather.tomorrow.temperature = this.roundFigures(tomorrow.temperatureHigh);
-				this.cityWeather.tomorrow.windSpeed = this.roundFigures(tomorrow.windSpeed);
-				this.cityWeather.tomorrow.windDirection = this.degToCompass(today.windBearing);
-				this.cityWeather.tomorrow.humidity = tomorrow.humidity * 100;
-				this.cityWeather.tomorrow.sunriseSunset.sunrise = this.convertUnixDate(weatherResult['daily'].data[1].sunriseTime, 'HH:mm');
-				this.cityWeather.tomorrow.sunriseSunset.sunset = this.convertUnixDate(weatherResult['daily'].data[1].sunsetTime, 'HH:mm');
+					this.longTermForecast = weatherResult['daily']['data'].slice(2, weatherResult['daily']['data'].length);
+
+					// Today/Current
+					this.cityWeather.today.time = this.convertUnixDate(today.time, 'MMM DD, YYYY @ HH:mm');
+					this.cityWeather.today.summary = today.summary;
+					this.cityWeather.today.icon = today.icon;
+					this.cityWeather.today.temperature = this.roundFigures(today.temperature);
+					this.cityWeather.today.windSpeed = this.roundFigures(today.windSpeed);
+					this.cityWeather.today.windDirection = this.degToCompass(today.windBearing);
+					this.cityWeather.today.humidity = this.roundFigures(today.humidity * 100);
+					this.cityWeather.today.sunriseSunset.sunrise = this.convertUnixDate(weatherResult['daily'].data[0].sunriseTime, 'HH:mm');
+					this.cityWeather.today.sunriseSunset.sunset = this.convertUnixDate(weatherResult['daily'].data[0].sunsetTime, 'HH:mm');
+
+					// Tomorrow
+					this.cityWeather.tomorrow.summary = tomorrow.summary;
+					this.cityWeather.tomorrow.icon = tomorrow.icon;
+					this.cityWeather.tomorrow.temperature = this.roundFigures(tomorrow.temperatureHigh);
+					this.cityWeather.tomorrow.windSpeed = this.roundFigures(tomorrow.windSpeed);
+					this.cityWeather.tomorrow.windDirection = this.degToCompass(today.windBearing);
+					this.cityWeather.tomorrow.humidity = this.roundFigures(tomorrow.humidity * 100);
+					this.cityWeather.tomorrow.sunriseSunset.sunrise = this.convertUnixDate(weatherResult['daily'].data[1].sunriseTime, 'HH:mm');
+					this.cityWeather.tomorrow.sunriseSunset.sunset = this.convertUnixDate(weatherResult['daily'].data[1].sunsetTime, 'HH:mm');
+				});
 			});
-		});
+		}, 1000);
 	}
 
 	roundFigures(num) {
