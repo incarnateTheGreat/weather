@@ -2,6 +2,7 @@ import { Component, Input, OnInit } from '@angular/core';
 import { Store } from '@ngrx/store';
 import { Observable } from 'rxjs/Rx';
 import * as moment from 'moment';
+import * as constants from '../../constants/constants';
 
 import { GetWeatherService } from '../../services/get-weather.service';
 
@@ -50,19 +51,7 @@ interface CityWeather {
 export class SearchCityComponent implements OnInit {
 	city: string = 'Toronto';
 	cityObj: Object;
-	cities: Object[] = [{
-		city: 'Toronto',
-		country: 'CA'
-	},{
-		city: 'New York City',
-		country: 'US'
-	},{
-		city: 'Los Angeles',
-		country: 'US'
-	},{
-		city: 'Miami',
-		country: 'US'
-	}];
+	cities: Object[] = constants.CITIES_ARRAY;
 	result: CityResult = {
 		name: '',
 		country: '',
@@ -104,10 +93,23 @@ export class SearchCityComponent implements OnInit {
 	updateInterval: any = null;
 	loading: boolean = false;
 
+	private chartData: Array<any>;
+
   constructor(private store: Store<any>,
 							private weather: GetWeatherService) {}
 
-  ngOnInit() {}
+  ngOnInit() {
+		 this.generateData();
+	}
+
+	generateData() {
+    this.chartData = [];
+    for (let i = 0; i < (8 + Math.floor(Math.random() * 10)); i++) {
+      this.chartData.push([`Index ${i}`, Math.floor(Math.random() * 100)]);
+    }
+  }
+
+	/////
 
 	activateInterval() {
 	  this.timer = Observable.timer(0, 60000 * 5);

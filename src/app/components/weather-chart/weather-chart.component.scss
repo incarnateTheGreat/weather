@@ -1,0 +1,37 @@
+.weather-chart {
+  width: 100%;
+  height: 400px;
+
+  .axis {
+    & path, & line {
+      stroke: #999;
+    }
+    & text {
+      fill: #999;
+    }
+  }
+}
+
+.svg-container {
+    display: inline-block;
+    position: relative;
+    width: 100%;
+    padding-bottom: 100%; /* aspect ratio */
+    vertical-align: top;
+    overflow: hidden;
+}
+.svg-content-responsive {
+    display: inline-block;
+    position: absolute;
+    top: 10px;
+    left: 0;
+}
+
+// .axis path,
+// .axis line {
+//   stroke: #999;
+// }
+
+// .d3-chart .axis text {
+//   fill: #999;
+// }

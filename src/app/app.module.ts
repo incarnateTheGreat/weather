@@ -5,29 +5,28 @@ import { FormsModule } from '@angular/forms';
 import { StoreModule } from '@ngrx/store';
 import { StoreDevtoolsModule } from '@ngrx/store-devtools';
 import { LoadingModule } from 'ngx-loading';
+import { D3Service } from 'd3-ng2-service';
 
 // Components
 import { AppComponent } from './app.component';
+import { SearchCityComponent } from './components/search-city/search-city.component';
+import { WeatherChartComponent } from './components/weather-chart/weather-chart.component';
 
 // Services
 import { GetWeatherService } from './services/get-weather.service';
-import { SearchCityComponent } from './components/search-city/search-city.component';
 
 // Reducers
 import { citiesReducer } from './reducers/cities.reducer';
 
-// Interceptor
-import { InterceptorModule } from './interceptor.module';
-
 @NgModule({
   declarations: [
     AppComponent,
-    SearchCityComponent
+    SearchCityComponent,
+    WeatherChartComponent
   ],
   imports: [
 		BrowserModule,
 		HttpClientModule,
-    InterceptorModule,
 		FormsModule,
 		StoreModule.forRoot({ cities: citiesReducer }),
 		StoreDevtoolsModule.instrument({
@@ -35,7 +34,10 @@ import { InterceptorModule } from './interceptor.module';
 		}),
     LoadingModule
   ],
-  providers: [GetWeatherService],
+  providers: [
+    GetWeatherService,
+    D3Service
+  ],
   bootstrap: [AppComponent]
 })
 export class AppModule {}
