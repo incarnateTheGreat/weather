@@ -1,3 +1,5 @@
+@import "~sass/styles";
+
 .weather-chart {
   width: 100%;
   height: 400px;
@@ -27,11 +29,66 @@
     left: 0;
 }
 
-// .axis path,
-// .axis line {
-//   stroke: #999;
-// }
+svg {
+    background-color: $grey-white;
+    padding: 30px;
+}
+path {
+    fill: none;
+    stroke: steelblue;
+    stroke-width: 2;
+}
 
-// .d3-chart .axis text {
-//   fill: #999;
-// }
+.axis path, .axis line {
+    fill: none;
+    shape-rendering: crispEdges;
+    stroke: #BBB;
+    stroke-width: 1;
+}
+
+.axis text {
+    fill: #766;
+    font-family: 'PT Sans Narrow', sans-serif;
+    font-size: 12px;
+}
+
+.overlay {
+  fill: none;
+  pointer-events: all;
+}
+
+.focus circle {
+  fill: #F1F3F3;
+  stroke: #6F257F;
+  stroke-width: 5px;
+}
+
+.hover-line {
+  stroke: #6F257F;
+  stroke-width: 2px;
+  stroke-dasharray: 3,3;
+}
+
+.dot {
+  cursor: pointer;
+}
+
+div.tooltip {
+  align-items: center;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+
+  position: absolute;
+  text-align: center;
+  width: 100px;
+  padding: 10px;
+  font: 16px sans-serif;
+  background: lightsteelblue;
+  border-radius: 2px;
+  pointer-events: none;
+
+  span {
+    font-weight: bold;
+  }
+}

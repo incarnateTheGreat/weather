@@ -100,13 +100,28 @@ export class SearchCityComponent implements OnInit {
 
   ngOnInit() {
 		 this.generateData();
+		 // this.chartData = [
+			// {time: '09:00', temperature: 0},
+			// {time: '10:00', temperature: 1.5},
+			// {time: '11:00', temperature: 3},
+			// {time: '12:00', temperature: 10},
+			// {time: '13:00', temperature: 5},
+			// {time: '14:00', temperature: 13},
+			// {time: '15:00', temperature: 5},
+			// {time: '16:00', temperature: 3},
+			// {time: '17:00', temperature: 7},
+			// {time: '18:00', temperature: 3},
+			// {time: '19:00', temperature: 7},
+			// {time: '20:00', temperature: 3},
+			// {time: '21:00', temperature: 7},
+			// {time: '22:00', temperature: 3}
+		 // ]
 	}
 
 	generateData() {
-    this.chartData = [];
-    for (let i = 0; i < (8 + Math.floor(Math.random() * 10)); i++) {
-      this.chartData.push([`Index ${i}`, Math.floor(Math.random() * 100)]);
-    }
+    // for (let i = 0; i < (8 + Math.floor(Math.random() * 10)); i++) {
+    //   this.chartData.push([`Index ${i}`, Math.floor(Math.random() * 100)]);
+    // }
   }
 
 	/////
@@ -141,17 +156,20 @@ export class SearchCityComponent implements OnInit {
 				this.result = result[0];
 
 				this.weather.getData(this.result.lat, this.result.lng).subscribe(weatherResult => {
-					this.loading = false;
-
 					if (Object.keys(weatherResult).length > 0) {
+						this.loading = false;
 						this.isData = true;
 					} else {
 						return;
 					}
 
 					const today = weatherResult['currently'],
-								tomorrow = weatherResult['daily']['data'][1];
+								tomorrow = weatherResult['daily']['data'][1],
+								dailyChartData = weatherResult['daily']['data'];
 
+					this.chartData = [];
+
+					// Determine length of remaining days for Long Term Forecast.
 					this.longTermForecast = weatherResult['daily']['data'].slice(2, weatherResult['daily']['data'].length);
 
 					// Today/Current
@@ -174,6 +192,13 @@ export class SearchCityComponent implements OnInit {
 					this.cityWeather.tomorrow.humidity = this.roundFigures(tomorrow.humidity * 100);
 					this.cityWeather.tomorrow.sunriseSunset.sunrise = this.convertUnixDate(weatherResult['daily'].data[1].sunriseTime, 'HH:mm');
 					this.cityWeather.tomorrow.sunriseSunset.sunset = this.convertUnixDate(weatherResult['daily'].data[1].sunsetTime, 'HH:mm');
+
+					// Hourly Chart Data
+					for (let x in dailyChartData) {
+						this.chartData.push(
+							{time: this.convertUnixDate(dailyChartData[x].time, 'MMM DD'),
+							temperature: this.roundFigures(dailyChartData[x].temperatureHigh) })
+					}
 				});
 			});
 		}, 1000);
