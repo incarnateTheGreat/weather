@@ -201,7 +201,7 @@ export class SearchCityComponent implements OnInit {
 					}
 				});
 			});
-		}, 1000);
+		}, 0);
 	}
 
 	roundFigures(num) {
