@@ -59,8 +59,20 @@ export class WeatherChartComponent implements OnInit, OnChanges {
       const xDomain = this.data.map(d => d['time']),
             yDomain = [0, d3.max(this.data, d => d['temperature'])];
 
-      // TODO: Why use scaleBand() and not scaleTime()
-      const x = d3.scaleBand().domain(xDomain).range([0, this.width]),
+      // In order to achieve the X-Axis Ticks to start at 0,0, scale using scaleTime() and
+      // update the Data using UNIX Timestamps to Javascript Date.
+      this.data.forEach((d) => {
+        d.time = new Date(d.time * 1000);
+      });
+
+      var xMin = d3.min(this.data, d => Math.min(d.time));
+      var xMax = d3.max(this.data, d => Math.max(d.time));
+
+      // Set up the X Domain with the 'Time' Javascript Date.
+      // x.domain(d3.extent(this.data, d => d.time));
+
+      // const x = d3.scaleBand().domain(xDomain).range([0, this.width]),
+      const x = d3.scaleTime().domain([xMin, xMax]).range([0, this.width]),
             y = d3.scaleLinear().domain(yDomain).range([this.height, 0]);
 
       const line = d3.line()
@@ -69,34 +81,36 @@ export class WeatherChartComponent implements OnInit, OnChanges {
 
       // Add the X Axis
       svg.append("g")
-          // .attr("transform", `translate(0, ${this.height})`)
           .attr("transform", `translate(50, ${this.height})`)
-          .call(d3.axisBottom(x));
+          .attr('class', 'x-axis')
+          .call(d3.axisBottom(x).ticks(d3.timeDay));
 
       // Add the Y Axis
       svg.append("g")
           .attr('transform', `translate(50, 0)`)
+          .attr('class', 'y-axis')
           .call(d3.axisLeft(y));
 
       // Add the Line path.
       svg.append("path")
+          .attr("class", "weather-line")
           .attr('transform', `translate(50, 0)`)
           .data([this.data])
           .attr("d", line);
 
-      // now add titles to the axes
+      // Add titles to The Axis'.
        svg.append("text")
-           .attr("text-anchor", "middle")
-           .attr("transform", `translate(5, ${this.height / 2})rotate(-90)`)
-           .html("Temperature (&deg C)");
+          .attr("text-anchor", "middle")
+          .attr("transform", `translate(5, ${this.height / 2})rotate(-90)`)
+          .html("Temperature (&deg C)");
 
        svg.append("text")
-            .attr("text-anchor", "middle")
-            .attr("transform", `translate(${this.width / 2}, ${this.height + 50})`)
-            .text("Date");
+          .attr("text-anchor", "middle")
+          .attr("transform", `translate(${this.width / 2}, ${this.height + 50})`)
+          .text("Date");
 
       // Define the div for the tooltip
-      var div = d3.select("body").append("div")
+      const div = d3.select("body").append("div")
           .attr("class", "tooltip")
           .style("opacity", 0);
 
@@ -125,48 +139,6 @@ export class WeatherChartComponent implements OnInit, OnChanges {
            .duration(250)
            .style("opacity", 0);
       }
-  }
-
-  createChart() {
-    const element = this.chartContainer.nativeElement;
-    this.width = element.offsetWidth - this.margin.left - this.margin.right;
-    this.height = element.offsetHeight - this.margin.top - this.margin.bottom;
-
-    const chartElem = d3.select(element),
-          aspect = this.width / this.height;
-
-    const svg = chartElem.append("div")
-      .classed("svg-container", true)
-      .append('svg')
-      .attr("preserveAspectRatio", "xMinYMin meet")
-      .attr("viewBox", `0 0 ${element.offsetWidth} ${element.offsetHeight}`)
-      .classed("svg-content-responsive", true);
-
-    // chart plot area
-    this.chart = svg.append('g')
-      .attr('class', 'bars')
-      .attr('transform', `translate(${this.margin.left}, ${this.margin.top})`);
-
-    // define X & Y domains
-    const xDomain = this.data.map(d => d[0]);
-    const yDomain = [0, d3.max(this.data, d => d[1])];
-
-    // create scales
-    this.xScale = d3.scaleBand().padding(0.1).domain(xDomain).rangeRound([0, this.width]);
-    this.yScale = d3.scaleLinear().domain(yDomain).range([this.height, 0]);
-
-    // bar colors
-    this.colors = d3.scaleLinear().domain([0, this.data.length]).range(<any[]>['red', 'blue']);
-
-    // x & y axis
-    this.xAxis = svg.append('g')
-      .attr('class', 'axis axis-x')
-      .attr('transform', `translate(${this.margin.left}, ${this.margin.top + this.height})`)
-      .call(d3.axisBottom(this.xScale));
-    this.yAxis = svg.append('g')
-      .attr('class', 'axis axis-y')
-      .attr('transform', `translate(${this.margin.left}, ${this.margin.top})`)
-      .call(d3.axisLeft(this.yScale));
   }
 
   updateChart() {

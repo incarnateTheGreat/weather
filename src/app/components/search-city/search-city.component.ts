@@ -3,7 +3,6 @@ import { Store } from '@ngrx/store';
 import { Observable } from 'rxjs/Rx';
 import * as moment from 'moment';
 import * as constants from '../../constants/constants';
-
 import { GetWeatherService } from '../../services/get-weather.service';
 
 interface CityResult {
@@ -98,33 +97,7 @@ export class SearchCityComponent implements OnInit {
   constructor(private store: Store<any>,
 							private weather: GetWeatherService) {}
 
-  ngOnInit() {
-		 this.generateData();
-		 // this.chartData = [
-			// {time: '09:00', temperature: 0},
-			// {time: '10:00', temperature: 1.5},
-			// {time: '11:00', temperature: 3},
-			// {time: '12:00', temperature: 10},
-			// {time: '13:00', temperature: 5},
-			// {time: '14:00', temperature: 13},
-			// {time: '15:00', temperature: 5},
-			// {time: '16:00', temperature: 3},
-			// {time: '17:00', temperature: 7},
-			// {time: '18:00', temperature: 3},
-			// {time: '19:00', temperature: 7},
-			// {time: '20:00', temperature: 3},
-			// {time: '21:00', temperature: 7},
-			// {time: '22:00', temperature: 3}
-		 // ]
-	}
-
-	generateData() {
-    // for (let i = 0; i < (8 + Math.floor(Math.random() * 10)); i++) {
-    //   this.chartData.push([`Index ${i}`, Math.floor(Math.random() * 100)]);
-    // }
-  }
-
-	/////
+  ngOnInit() {}
 
 	activateInterval() {
 	  this.timer = Observable.timer(0, 60000 * 5);
@@ -196,7 +169,7 @@ export class SearchCityComponent implements OnInit {
 					// Hourly Chart Data
 					for (let x in dailyChartData) {
 						this.chartData.push(
-							{time: this.convertUnixDate(dailyChartData[x].time, 'MMM DD'),
+							{time: dailyChartData[x].time,
 							temperature: this.roundFigures(dailyChartData[x].temperatureHigh) })
 					}
 				});

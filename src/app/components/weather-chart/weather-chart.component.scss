@@ -3,15 +3,6 @@
 .weather-chart {
   width: 100%;
   height: 400px;
-
-  .axis {
-    & path, & line {
-      stroke: #999;
-    }
-    & text {
-      fill: #999;
-    }
-  }
 }
 
 .svg-container {
@@ -30,64 +21,39 @@
 }
 
 svg {
-    background-color: $grey-white;
-    padding: 30px;
+  background-color: $grey-white;
+  padding: 30px;
 }
 path {
-    fill: none;
-    stroke: steelblue;
-    stroke-width: 2;
-}
-
-.axis path, .axis line {
-    fill: none;
-    shape-rendering: crispEdges;
-    stroke: #BBB;
-    stroke-width: 1;
-}
-
-.axis text {
-    fill: #766;
-    font-family: 'PT Sans Narrow', sans-serif;
-    font-size: 12px;
-}
-
-.overlay {
   fill: none;
-  pointer-events: all;
+  stroke: $dark-grey;
+  stroke-width: 2;
 }
 
-.focus circle {
-  fill: #F1F3F3;
-  stroke: #6F257F;
-  stroke-width: 5px;
-}
-
-.hover-line {
-  stroke: #6F257F;
-  stroke-width: 2px;
-  stroke-dasharray: 3,3;
+.weather-line {
+  fill: none;
+  stroke: $light-grey;
+  stroke-width: 2;
 }
 
 .dot {
   cursor: pointer;
 }
 
-div.tooltip {
+.tooltip {
   align-items: center;
+  background: lightsteelblue;
+  border-radius: 2px;
   display: flex;
+  font-size: $font-size-medium;
   flex-direction: column;
   justify-content: center;
-
+  padding: 10px;
+  pointer-events: none;
   position: absolute;
   text-align: center;
   width: 100px;
-  padding: 10px;
-  font: 16px sans-serif;
-  background: lightsteelblue;
-  border-radius: 2px;
-  pointer-events: none;
-
+  
   span {
     font-weight: bold;
   }
