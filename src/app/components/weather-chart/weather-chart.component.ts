@@ -1,4 +1,5 @@
 import { Component, OnInit, OnChanges, ViewChild, ElementRef, Input, ViewEncapsulation } from '@angular/core';
+import * as moment from 'moment';
 import * as d3 from 'd3';
 
 @Component({
@@ -11,7 +12,7 @@ export class WeatherChartComponent implements OnInit, OnChanges {
   @ViewChild('weatherChart') private chartContainer: ElementRef;
   @Input() private data: Array<any>;
 
-  private margin: any = { top: 20, right: 30, bottom: 30, left: 30};
+  private margin: any = { top: 20, right: 120, bottom: 30, left: 30};
   private chart: any;
   private width: number;
   private height: number;
@@ -50,31 +51,30 @@ export class WeatherChartComponent implements OnInit, OnChanges {
       .attr("viewBox", `0 0 ${element.offsetWidth} ${element.offsetHeight}`)
       .classed("svg-content-responsive", true);
 
-    // chart plot area
+    // Chart out the Plot Area.
     this.chart = svg.append('g')
       .attr('class', 'lines')
       .attr('transform', `translate(${this.margin.left}, ${this.margin.top})`);
 
-      // define X & Y domains
+      // Define the X & Y domains
       const xDomain = this.data.map(d => d['time']),
             yDomain = [0, d3.max(this.data, d => d['temperature'])];
 
       // In order to achieve the X-Axis Ticks to start at 0,0, scale using scaleTime() and
-      // update the Data using UNIX Timestamps to Javascript Date.
+      // update the Data using UNIX Timestamps to a Moment Object.
       this.data.forEach((d) => {
-        d.time = new Date(d.time * 1000);
+        d.time = moment.unix(d.time).startOf('day');
       });
 
+      // Find and Assign the Min and Max X-Axis range.
       var xMin = d3.min(this.data, d => Math.min(d.time));
       var xMax = d3.max(this.data, d => Math.max(d.time));
 
-      // Set up the X Domain with the 'Time' Javascript Date.
-      // x.domain(d3.extent(this.data, d => d.time));
-
-      // const x = d3.scaleBand().domain(xDomain).range([0, this.width]),
+      // Define the X & Y Scales.
       const x = d3.scaleTime().domain([xMin, xMax]).range([0, this.width]),
             y = d3.scaleLinear().domain(yDomain).range([this.height, 0]);
 
+      // Draw the Line and apply the X & Y Scales to it.
       const line = d3.line()
             .x((d) => x(d['time']))
             .y((d) => y(d['temperature']));
@@ -114,8 +114,9 @@ export class WeatherChartComponent implements OnInit, OnChanges {
           .attr("class", "tooltip")
           .style("opacity", 0);
 
+      // Draw the Dots on the Chart.
       svg.selectAll(".dot")
-        .data(this.data.filter(function(d) { return d; }))
+        .data(this.data.filter(d => d))
         .enter().append("circle")
           .attr('transform', `translate(50, 0)`)
           .attr("class", "dot")
@@ -125,13 +126,14 @@ export class WeatherChartComponent implements OnInit, OnChanges {
           .on("mouseover", mouseover)
           .on("mouseout", mouseout);
 
+      // Hover functionality.
       function mouseover(d) {
         div.transition()
            .duration(200)
            .style("opacity", .9);
-        div.html(`<span>${d.time}</span> ${d.temperature}&deg`)
-           .style("left", (d3.event.pageX) + "px")
-           .style("top", (d3.event.pageY - 28) + "px");
+        div.html(`<span>${d.time.format('ddd MMM DD')}</span> ${d.temperature}&deg`)
+           .style("left", `${d3.event.pageX - 75}px`)
+           .style("top", `${d3.event.pageY + 10}px`);
         };
 
       function mouseout() {

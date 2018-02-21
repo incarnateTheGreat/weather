@@ -91,6 +91,8 @@ export class SearchCityComponent implements OnInit {
 	timer: Observable<any>;
 	updateInterval: any = null;
 	loading: boolean = false;
+	dateString: string = 'MMM DD, YYYY';
+	timeString: string = 'HH:mm';
 
 	private chartData: Array<any>;
 
@@ -146,15 +148,15 @@ export class SearchCityComponent implements OnInit {
 					this.longTermForecast = weatherResult['daily']['data'].slice(2, weatherResult['daily']['data'].length);
 
 					// Today/Current
-					this.cityWeather.today.time = this.convertUnixDate(today.time, 'MMM DD, YYYY @ HH:mm');
+					this.cityWeather.today.time = this.convertUnixDate(today.time, `${this.dateString} @ ${this.timeString}`);
 					this.cityWeather.today.summary = today.summary;
 					this.cityWeather.today.icon = today.icon;
 					this.cityWeather.today.temperature = this.roundFigures(today.temperature);
 					this.cityWeather.today.windSpeed = this.roundFigures(today.windSpeed);
 					this.cityWeather.today.windDirection = this.degToCompass(today.windBearing);
 					this.cityWeather.today.humidity = this.roundFigures(today.humidity * 100);
-					this.cityWeather.today.sunriseSunset.sunrise = this.convertUnixDate(weatherResult['daily'].data[0].sunriseTime, 'HH:mm');
-					this.cityWeather.today.sunriseSunset.sunset = this.convertUnixDate(weatherResult['daily'].data[0].sunsetTime, 'HH:mm');
+					this.cityWeather.today.sunriseSunset.sunrise = this.convertUnixDate(weatherResult['daily'].data[0].sunriseTime, this.timeString);
+					this.cityWeather.today.sunriseSunset.sunset = this.convertUnixDate(weatherResult['daily'].data[0].sunsetTime, this.timeString);
 
 					// Tomorrow
 					this.cityWeather.tomorrow.summary = tomorrow.summary;
@@ -163,14 +165,15 @@ export class SearchCityComponent implements OnInit {
 					this.cityWeather.tomorrow.windSpeed = this.roundFigures(tomorrow.windSpeed);
 					this.cityWeather.tomorrow.windDirection = this.degToCompass(today.windBearing);
 					this.cityWeather.tomorrow.humidity = this.roundFigures(tomorrow.humidity * 100);
-					this.cityWeather.tomorrow.sunriseSunset.sunrise = this.convertUnixDate(weatherResult['daily'].data[1].sunriseTime, 'HH:mm');
-					this.cityWeather.tomorrow.sunriseSunset.sunset = this.convertUnixDate(weatherResult['daily'].data[1].sunsetTime, 'HH:mm');
+					this.cityWeather.tomorrow.sunriseSunset.sunrise = this.convertUnixDate(weatherResult['daily'].data[1].sunriseTime, this.timeString);
+					this.cityWeather.tomorrow.sunriseSunset.sunset = this.convertUnixDate(weatherResult['daily'].data[1].sunsetTime, this.timeString);
 
 					// Hourly Chart Data
-					for (let x in dailyChartData) {
-						this.chartData.push(
-							{time: dailyChartData[x].time,
-							temperature: this.roundFigures(dailyChartData[x].temperatureHigh) })
+					for (let x in this.longTermForecast) {
+						this.chartData.push({
+							time: this.longTermForecast[x].time,
+							temperature: this.roundFigures(this.longTermForecast[x].temperatureHigh)
+						})
 					}
 				});
 			});
@@ -181,8 +184,8 @@ export class SearchCityComponent implements OnInit {
 		return Math.round(num);
 	}
 
-	convertUnixDate(unixTimestamp, format) {
-		return moment.unix(unixTimestamp).format(`${format}`);
+	convertUnixDate(unixTimestamp, format = this.dateString) {
+		return moment.unix(unixTimestamp).format(format);
 	}
 
 	weatherIcon(icon) {
