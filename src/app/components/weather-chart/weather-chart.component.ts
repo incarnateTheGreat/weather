@@ -21,22 +21,25 @@ export class WeatherChartComponent implements OnInit, OnChanges {
   private colors: any;
   private xAxis: any;
   private yAxis: any;
+  private isDataInit: boolean = false;
 
   constructor() {}
 
   ngOnInit() {}
 
-  ngAfterViewInit() {
-    // this.createLineChart();
-
-    // if (this.data) this.updateChart();
-  }
-
   ngOnChanges() {
-    if (this.data) this.createLineChart();
+    if (this.data) {
+      if (this.isDataInit) {
+        this.updateChart();
+      } else if (!this.isDataInit) {
+        this.createLineChart();
+      }
+    }
   }
 
   createLineChart() {
+    this.isDataInit = true;
+
     const element = this.chartContainer.nativeElement;
     this.width = element.offsetWidth - this.margin.left - this.margin.right;
     this.height = element.offsetHeight - this.margin.top - this.margin.bottom;
@@ -56,9 +59,8 @@ export class WeatherChartComponent implements OnInit, OnChanges {
       .attr('class', 'lines')
       .attr('transform', `translate(${this.margin.left}, ${this.margin.top})`);
 
-      // Define the X & Y domains
-      const xDomain = this.data.map(d => d['time']),
-            yDomain = [0, d3.max(this.data, d => d['temperature'])];
+      // Define the Y domains
+      const yDomain = [0, d3.max(this.data, d => d['temperature'])];
 
       // In order to achieve the X-Axis Ticks to start at 0,0, scale using scaleTime() and
       // update the Data using UNIX Timestamps to a Moment Object.
@@ -67,29 +69,29 @@ export class WeatherChartComponent implements OnInit, OnChanges {
       });
 
       // Find and Assign the Min and Max X-Axis range.
-      var xMin = d3.min(this.data, d => Math.min(d.time));
-      var xMax = d3.max(this.data, d => Math.max(d.time));
+      const xMin = d3.min(this.data, d => Math.min(d.time)),
+            xMax = d3.max(this.data, d => Math.max(d.time));
 
       // Define the X & Y Scales.
-      const x = d3.scaleTime().domain([xMin, xMax]).range([0, this.width]),
-            y = d3.scaleLinear().domain(yDomain).range([this.height, 0]);
+      this.xScale = d3.scaleTime().domain([xMin, xMax]).range([0, this.width]),
+      this.yScale = d3.scaleLinear().domain(yDomain).range([this.height, 0]);
 
       // Draw the Line and apply the X & Y Scales to it.
       const line = d3.line()
-            .x((d) => x(d['time']))
-            .y((d) => y(d['temperature']));
+            .x((d) => this.xScale(d['time']))
+            .y((d) => this.yScale(d['temperature']));
 
       // Add the X Axis
       svg.append("g")
           .attr("transform", `translate(50, ${this.height})`)
           .attr('class', 'x-axis')
-          .call(d3.axisBottom(x).ticks(d3.timeDay));
+          .call(d3.axisBottom(this.xScale).ticks(d3.timeDay));
 
       // Add the Y Axis
       svg.append("g")
           .attr('transform', `translate(50, 0)`)
           .attr('class', 'y-axis')
-          .call(d3.axisLeft(y));
+          .call(d3.axisLeft(this.yScale));
 
       // Add the Line path.
       svg.append("path")
@@ -120,8 +122,8 @@ export class WeatherChartComponent implements OnInit, OnChanges {
         .enter().append("circle")
           .attr('transform', `translate(50, 0)`)
           .attr("class", "dot")
-          .attr("cx", (d) => x(d['time']))
-          .attr("cy", (d) => y(d['temperature']))
+          .attr("cx", (d) => this.xScale(d['time']))
+          .attr("cy", (d) => this.yScale(d['temperature']))
           .attr("r", 4.5)
           .on("mouseover", mouseover)
           .on("mouseout", mouseout);
@@ -145,39 +147,54 @@ export class WeatherChartComponent implements OnInit, OnChanges {
 
   updateChart() {
     // update scales & axis
-    this.xScale.domain(this.data.map(d => d[0]));
-    this.yScale.domain([0, d3.max(this.data, d => d[1])]);
-    this.colors.domain([0, this.data.length]);
-    this.xAxis.transition().call(d3.axisBottom(this.xScale));
-    this.yAxis.transition().call(d3.axisLeft(this.yScale));
+    // this.xScale.domain(this.data.map(d => d[0]));
+    // this.yScale.domain([0, d3.max(this.data, d => d[1])]);
 
-    const update = this.chart.selectAll('.bar')
-      .data(this.data);
+    // DO THIS ALL AGAIN
 
-    // remove exiting bars
-    update.exit().remove();
+    // Define the Y domains
+    const yDomain = [0, d3.max(this.data, d => d['temperature'])];
 
-    // update existing bars
-    this.chart.selectAll('.bar').transition()
-      .attr('x', d => this.xScale(d[0]))
-      .attr('y', d => this.yScale(d[1]))
-      .attr('width', d => this.xScale.bandwidth())
-      .attr('height', d => this.height - this.yScale(d[1]))
-      .style('fill', (d, i) => this.colors(i));
+    // Find and Assign the Min and Max X-Axis range.
+    const xMin = d3.min(this.data, d => Math.min(d.time)),
+          xMax = d3.max(this.data, d => Math.max(d.time));
 
-    // add new bars
-    update
-      .enter()
-      .append('rect')
-      .attr('class', 'bar')
-      .attr('x', d => this.xScale(d[0]))
-      .attr('y', d => this.yScale(0))
-      .attr('width', this.xScale.bandwidth())
-      .attr('height', 0)
-      .style('fill', (d, i) => this.colors(i))
-      .transition()
-      .delay((d, i) => i * 10)
-      .attr('y', d => this.yScale(d[1]))
-      .attr('height', d => this.height - this.yScale(d[1]));
+    this.xScale = d3.scaleTime().domain([xMin, xMax]).range([0, this.width]),
+    this.yScale = d3.scaleLinear().domain(yDomain).range([this.height, 0]);
+
+
+
+    // this.colors.domain([0, this.data.length]);
+    // this.xAxis.transition().call(d3.axisBottom(this.xScale));
+    // this.yAxis.transition().call(d3.axisLeft(this.yScale));
+    //
+    // const update = this.chart.selectAll('.bar')
+    //   .data(this.data);
+    //
+    // // remove exiting bars
+    // update.exit().remove();
+    //
+    // // update existing bars
+    // this.chart.selectAll('.bar').transition()
+    //   .attr('x', d => this.xScale(d[0]))
+    //   .attr('y', d => this.yScale(d[1]))
+    //   .attr('width', d => this.xScale.bandwidth())
+    //   .attr('height', d => this.height - this.yScale(d[1]))
+    //   .style('fill', (d, i) => this.colors(i));
+    //
+    // // add new bars
+    // update
+    //   .enter()
+    //   .append('rect')
+    //   .attr('class', 'bar')
+    //   .attr('x', d => this.xScale(d[0]))
+    //   .attr('y', d => this.yScale(0))
+    //   .attr('width', this.xScale.bandwidth())
+    //   .attr('height', 0)
+    //   .style('fill', (d, i) => this.colors(i))
+    //   .transition()
+    //   .delay((d, i) => i * 10)
+    //   .attr('y', d => this.yScale(d[1]))
+    //   .attr('height', d => this.height - this.yScale(d[1]));
   }
 }
