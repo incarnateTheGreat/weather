@@ -14,13 +14,17 @@ export class WeatherChartComponent implements OnInit, OnChanges {
 
   private margin: any = { top: 20, right: 120, bottom: 30, left: 30};
   private chart: any;
+  private svg: any;
   private width: number;
   private height: number;
+  private line: any;
   private xScale: any;
   private yScale: any;
   private colors: any;
   private xAxis: any;
   private yAxis: any;
+  private updateDuration: number = 1500;
+  private hoverDuration: number = 250;
   private isDataInit: boolean = false;
 
   constructor() {}
@@ -37,6 +41,29 @@ export class WeatherChartComponent implements OnInit, OnChanges {
     }
   }
 
+  getD3Data() {
+    // Define the Y domains
+    const yDomain = [0, d3.max(this.data, d => d['temperature'])];
+
+    // In order to achieve the X-Axis Ticks to start at 0,0, scale using scaleTime() and
+    // update the Data using UNIX Timestamps to a Moment Object.
+    this.data.forEach((d) => {
+      d.time = moment.unix(d.time).startOf('day');
+    });
+
+    // Find and Assign the Min and Max X-Axis range.
+    const xMin = d3.min(this.data, d => Math.min(d.time)),
+          xMax = d3.max(this.data, d => Math.max(d.time));
+
+    // Define the X & Y Scales.
+    this.xScale = d3.scaleTime().domain([xMin, xMax]).range([0, this.width]),
+    this.yScale = d3.scaleLinear().domain(yDomain).range([this.height, 0]);
+
+    this.line = d3.line()
+        .x((d) => this.xScale(d['time']))
+        .y((d) => this.yScale(d['temperature']));
+  }
+
   createLineChart() {
     this.isDataInit = true;
 
@@ -47,7 +74,7 @@ export class WeatherChartComponent implements OnInit, OnChanges {
     const chartElem = d3.select(element),
           aspect = this.width / this.height;
 
-    const svg = chartElem.append("div")
+    this.svg = chartElem.append("div")
       .classed("svg-container", true)
       .append('svg')
       .attr("preserveAspectRatio", "xMinYMin meet")
@@ -55,146 +82,104 @@ export class WeatherChartComponent implements OnInit, OnChanges {
       .classed("svg-content-responsive", true);
 
     // Chart out the Plot Area.
-    this.chart = svg.append('g')
+    this.chart = this.svg
+      .append('g')
       .attr('class', 'lines')
       .attr('transform', `translate(${this.margin.left}, ${this.margin.top})`);
 
-      // Define the Y domains
-      const yDomain = [0, d3.max(this.data, d => d['temperature'])];
+    // Use the Weather Data to create the SVG points and Line.
+    this.getD3Data();
 
-      // In order to achieve the X-Axis Ticks to start at 0,0, scale using scaleTime() and
-      // update the Data using UNIX Timestamps to a Moment Object.
-      this.data.forEach((d) => {
-        d.time = moment.unix(d.time).startOf('day');
-      });
+    // Add the X Axis
+    this.svg
+        .append("g")
+        .attr("transform", `translate(50, ${this.height})`)
+        .attr('class', 'x-axis')
+        .call(d3.axisBottom(this.xScale).ticks(d3.timeDay));
 
-      // Find and Assign the Min and Max X-Axis range.
-      const xMin = d3.min(this.data, d => Math.min(d.time)),
-            xMax = d3.max(this.data, d => Math.max(d.time));
+    // Add the Y Axis
+    this.svg
+        .append("g")
+        .attr('transform', `translate(50, 0)`)
+        .attr('class', 'y-axis')
+        .call(d3.axisLeft(this.yScale));
 
-      // Define the X & Y Scales.
-      this.xScale = d3.scaleTime().domain([xMin, xMax]).range([0, this.width]),
-      this.yScale = d3.scaleLinear().domain(yDomain).range([this.height, 0]);
+    // Add the Line path.
+    this.svg
+        .append("path")
+        .attr("class", "weather-line")
+        .attr('transform', `translate(50, 0)`)
+        .data([this.data])
+        .attr("d", this.line);
 
-      // Draw the Line and apply the X & Y Scales to it.
-      const line = d3.line()
-            .x((d) => this.xScale(d['time']))
-            .y((d) => this.yScale(d['temperature']));
+    // Add titles to The Axis'.
+    this.svg
+        .append("text")
+        .attr("text-anchor", "middle")
+        .attr("transform", `translate(5, ${this.height / 2})rotate(-90)`)
+        .html("Temperature (&deg C)");
 
-      // Add the X Axis
-      svg.append("g")
-          .attr("transform", `translate(50, ${this.height})`)
-          .attr('class', 'x-axis')
-          .call(d3.axisBottom(this.xScale).ticks(d3.timeDay));
+    this.svg
+        .append("text")
+        .attr("text-anchor", "middle")
+        .attr("transform", `translate(${this.width / 2}, ${this.height + 50})`)
+        .text("Date");
 
-      // Add the Y Axis
-      svg.append("g")
-          .attr('transform', `translate(50, 0)`)
-          .attr('class', 'y-axis')
-          .call(d3.axisLeft(this.yScale));
+    // Define the div for the tooltip
+    const div = d3.select("body").append("div")
+        .attr("class", "tooltip")
+        .style("opacity", 0);
 
-      // Add the Line path.
-      svg.append("path")
-          .attr("class", "weather-line")
-          .attr('transform', `translate(50, 0)`)
-          .data([this.data])
-          .attr("d", line);
+    // Draw the Dots on the Chart.
+    this.svg
+      .selectAll(".dot")
+      .data(this.data.filter(d => d))
+      .enter()
+        .append("circle")
+        .attr('transform', `translate(50, 0)`)
+        .attr("class", "dot")
+        .attr("cx", (d) => this.xScale(d['time']))
+        .attr("cy", (d) => this.yScale(d['temperature']))
+        .attr("r", 4.5)
+        .on("mouseover", mouseover)
+        .on("mouseout", mouseout);
 
-      // Add titles to The Axis'.
-       svg.append("text")
-          .attr("text-anchor", "middle")
-          .attr("transform", `translate(5, ${this.height / 2})rotate(-90)`)
-          .html("Temperature (&deg C)");
+    // Hover functionality.
+    function mouseover(d) {
+      div.transition()
+         .duration(this.hoverDuration)
+         .style("opacity", .9);
+      div.html(`<span>${d.time.format('ddd MMM DD')}</span> ${d.temperature}&deg`)
+         .style("left", `${d3.event.pageX - 75}px`)
+         .style("top", `${d3.event.pageY + 10}px`);
+      };
 
-       svg.append("text")
-          .attr("text-anchor", "middle")
-          .attr("transform", `translate(${this.width / 2}, ${this.height + 50})`)
-          .text("Date");
-
-      // Define the div for the tooltip
-      const div = d3.select("body").append("div")
-          .attr("class", "tooltip")
-          .style("opacity", 0);
-
-      // Draw the Dots on the Chart.
-      svg.selectAll(".dot")
-        .data(this.data.filter(d => d))
-        .enter().append("circle")
-          .attr('transform', `translate(50, 0)`)
-          .attr("class", "dot")
-          .attr("cx", (d) => this.xScale(d['time']))
-          .attr("cy", (d) => this.yScale(d['temperature']))
-          .attr("r", 4.5)
-          .on("mouseover", mouseover)
-          .on("mouseout", mouseout);
-
-      // Hover functionality.
-      function mouseover(d) {
-        div.transition()
-           .duration(200)
-           .style("opacity", .9);
-        div.html(`<span>${d.time.format('ddd MMM DD')}</span> ${d.temperature}&deg`)
-           .style("left", `${d3.event.pageX - 75}px`)
-           .style("top", `${d3.event.pageY + 10}px`);
-        };
-
-      function mouseout() {
-        div.transition()
-           .duration(250)
-           .style("opacity", 0);
-      }
+    function mouseout() {
+      div.transition()
+         .duration(this.hoverDuration)
+         .style("opacity", 0);
+    }
   }
 
   updateChart() {
-    // update scales & axis
-    // this.xScale.domain(this.data.map(d => d[0]));
-    // this.yScale.domain([0, d3.max(this.data, d => d[1])]);
+    this.getD3Data();
 
-    // DO THIS ALL AGAIN
+    this.svg
+      .selectAll('circle')
+      .data(this.data)
+      .transition()
+      .duration(this.updateDuration)
+      .attr('transform', `translate(50, 0)`)
+      .attr("cx", (d) => this.xScale(d['time']))
+      .attr("cy", (d) => this.yScale(d['temperature']))
+      .attr("r", 4.5);
 
-    // Define the Y domains
-    const yDomain = [0, d3.max(this.data, d => d['temperature'])];
-
-    // Find and Assign the Min and Max X-Axis range.
-    const xMin = d3.min(this.data, d => Math.min(d.time)),
-          xMax = d3.max(this.data, d => Math.max(d.time));
-
-    this.xScale = d3.scaleTime().domain([xMin, xMax]).range([0, this.width]),
-    this.yScale = d3.scaleLinear().domain(yDomain).range([this.height, 0]);
-
-
-
-    // this.colors.domain([0, this.data.length]);
-    // this.xAxis.transition().call(d3.axisBottom(this.xScale));
-    // this.yAxis.transition().call(d3.axisLeft(this.yScale));
-    //
-    // const update = this.chart.selectAll('.bar')
-    //   .data(this.data);
-    //
-    // // remove exiting bars
-    // update.exit().remove();
-    //
-    // // update existing bars
-    // this.chart.selectAll('.bar').transition()
-    //   .attr('x', d => this.xScale(d[0]))
-    //   .attr('y', d => this.yScale(d[1]))
-    //   .attr('width', d => this.xScale.bandwidth())
-    //   .attr('height', d => this.height - this.yScale(d[1]))
-    //   .style('fill', (d, i) => this.colors(i));
-    //
-    // // add new bars
-    // update
-    //   .enter()
-    //   .append('rect')
-    //   .attr('class', 'bar')
-    //   .attr('x', d => this.xScale(d[0]))
-    //   .attr('y', d => this.yScale(0))
-    //   .attr('width', this.xScale.bandwidth())
-    //   .attr('height', 0)
-    //   .style('fill', (d, i) => this.colors(i))
-    //   .transition()
-    //   .delay((d, i) => i * 10)
-    //   .attr('y', d => this.yScale(d[1]))
-    //   .attr('height', d => this.height - this.yScale(d[1]));
+    this.svg
+      .select("path.weather-line")
+      .data([this.data])
+      .transition()
+      .duration(this.updateDuration)
+      .attr('transform', `translate(50, 0)`)
+      .attr("d", this.line);
   }
 }
