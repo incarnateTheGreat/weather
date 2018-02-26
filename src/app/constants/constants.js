@@ -21,6 +21,9 @@ export const CITIES_ARRAY = [{
   city: 'Puerto La Cruz',
   country: 'VE'
 },{
+  city: 'London',
+  country: 'GB'
+},{
   city: 'Manchester',
   country: 'GB'
 },{
