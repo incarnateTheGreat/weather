@@ -5,6 +5,8 @@
   ._search-city__header {
     background-color: $light-grey;
     padding: 10px;
+    position: sticky;
+    top: 0;
   }
 
   ._search-city__title-date {
