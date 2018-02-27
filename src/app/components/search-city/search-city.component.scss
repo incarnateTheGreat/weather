@@ -2,6 +2,10 @@
 
 .search-city {
 
+	select {
+		width: 100%;
+	}
+
   ._search-city__header {
     background-color: $light-grey;
     padding: 10px;
@@ -46,6 +50,11 @@
 
         >:first-child {
           width: 50%;
+
+					@include respond-to(xs-max) {
+						font-size: $font-size-small;
+						width: 75%;
+					}
         }
 
         h2 {
@@ -76,6 +85,12 @@
           display: flex;
           font-size: $font-size-wi;
           padding: 0 50px 0 0;
+
+					@include respond-to(xs-max) {
+						justify-content: flex-end;
+						padding: 0;
+						width: 25%;
+					}
         }
       }
     }
@@ -83,18 +98,22 @@
 
   ._search-city__days {
     border-top: 1px solid $light-grey;
-    display: flex;
+    display: grid;
+		grid-template-columns: 1fr 1fr 1fr;
+
+		@include respond-to(sm-max) {
+			grid-template-columns: 33% 33% 33%;
+		}
+
+		@include respond-to(xs-max) {
+			grid-template-columns: 50% 50%;
+		}
 
     ._search-city-days__day {
       align-items: center;
       display: flex;
       flex-direction: column;
-      padding: 10px 0;
-      width: 20%;
-
-      @include respond-to(sm-max) {
-        width: 33%;
-      }
+      padding: 10px 0 50px;
 
       ._search-city-days_day__day {
         font-size: $font-size-medium;

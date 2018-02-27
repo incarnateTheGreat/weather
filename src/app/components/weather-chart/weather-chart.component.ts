@@ -26,6 +26,7 @@ export class WeatherChartComponent implements OnInit, OnChanges {
   private updateDuration: number = 1000;
   private hoverDuration: number = 250;
   private isDataInit: boolean = false;
+	private translatePosition: string = 'translate(80, 0)';
 
   constructor() {}
 
@@ -41,31 +42,6 @@ export class WeatherChartComponent implements OnInit, OnChanges {
     }
   }
 
-  getD3Data() {
-    // Find and Assign the Min and Max Y-Axis range.
-    const yMin = d3.min(this.data, d => Math.min(d['temperature'])),
-          yMax = d3.max(this.data, d => Math.max(d['temperature'])),
-          yDomain = [yMin - 1, yMax + 1];
-
-    // In order to achieve the X-Axis Ticks to start at 0,0, scale using scaleTime() and
-    // update the Data using UNIX Timestamps to a Moment Object.
-    this.data.forEach(d => d['time'] = moment.unix(d['time']).startOf('day'));
-
-    // Find and Assign the Min and Max X-Axis range.
-    const xMin = d3.min(this.data, d => Math.min(d['time'])),
-          xMax = d3.max(this.data, d => Math.max(d['time'])),
-          xDomain = [xMin, xMax];
-
-    // Define the X & Y Scales.
-    this.xScale = d3.scaleTime().domain(xDomain).range([0, this.width]),
-    this.yScale = d3.scaleLinear().domain(yDomain).range([this.height, 0]);
-
-    // Draw the Line.
-    this.line = d3.line()
-									.x(d => this.xScale(d['time']))
-									.y(d => this.yScale(d['temperature']));
-  }
-
   createLineChart() {
     this.isDataInit = true;
 
@@ -79,8 +55,9 @@ export class WeatherChartComponent implements OnInit, OnChanges {
     this.svg = chartElem.append('div')
       .classed('svg-container', true)
       .append('svg')
-      .attr('preserveAspectRatio', 'xMinYMin meet')
-      .attr('viewBox', `0 0 ${element.offsetWidth} ${element.offsetHeight}`);
+	      .attr('preserveAspectRatio', 'xMinYMin meet')
+	      .attr('viewBox', `0 0 ${element.offsetWidth} ${element.offsetHeight}`)
+				.attr('transform', `translate(5, 0)`)
 
     d3.select(window).on('resize.updatesvg', resize);
 
@@ -100,14 +77,14 @@ export class WeatherChartComponent implements OnInit, OnChanges {
     // Add the X Axis
     this.svg
         .append('g')
-        .attr('transform', `translate(50, ${this.height})`)
+        .attr('transform', `translate(80, ${this.height})`)
         .attr('class', 'x-axis')
         .call(d3.axisBottom(this.xScale).ticks(d3.timeDay));
 
     // Add the Y Axis
     this.svg
         .append('g')
-        .attr('transform', `translate(50, 0)`)
+        .attr('transform', `${this.translatePosition}`)
         .attr('class', 'y-axis')
         .call(d3.axisLeft(this.yScale).tickFormat(d3.format('d')));
 
@@ -115,7 +92,7 @@ export class WeatherChartComponent implements OnInit, OnChanges {
     this.svg
         .append('path')
         .attr('class', 'weather-line')
-        .attr('transform', `translate(50, 0)`)
+        .attr('transform', `${this.translatePosition}`)
         .data([this.data])
         .attr('d', this.line);
 
@@ -130,7 +107,7 @@ export class WeatherChartComponent implements OnInit, OnChanges {
     this.svg
         .append('text')
         .attr('text-anchor', 'middle')
-        .attr('transform', `translate(5, ${this.height / 2})rotate(-90)`)
+        .attr('transform', `translate(35, ${this.height / 2})rotate(-90)`)
         .html('Temperature (&deg C)');
 
     // Define the div for the tooltip
@@ -144,7 +121,7 @@ export class WeatherChartComponent implements OnInit, OnChanges {
       .data(this.data.filter(d => d))
       .enter()
         .append('circle')
-        .attr('transform', `translate(50, 0)`)
+        .attr('transform', `${this.translatePosition}`)
         .attr('class', 'dot')
         .attr('cx', d => this.xScale(d['time']))
         .attr('cy', d => this.yScale(d['temperature']))
@@ -169,6 +146,32 @@ export class WeatherChartComponent implements OnInit, OnChanges {
     }
   }
 
+	getD3Data() {
+		// Find and Assign the Min and Max Y-Axis range.
+		const yMin = d3.min(this.data, d => Math.min(d['temperature'])),
+					yMax = d3.max(this.data, d => Math.max(d['temperature'])),
+					yDomain = [yMin - 1, yMax + 1];
+
+		// In order to achieve the X-Axis Ticks to start at 0,0, scale using scaleTime() and
+		// update the Data using UNIX Timestamps to a Moment Object.
+		this.data.forEach(d => d['time'] = moment.unix(d['time']).startOf('day'));
+
+		// Find and Assign the Min and Max X-Axis range.
+		const xMin = d3.min(this.data, d => Math.min(d['time'])),
+					xMax = d3.max(this.data, d => Math.max(d['time'])),
+					xDomain = [xMin, xMax];
+
+		// Define the X & Y Scales.
+		this.xScale = d3.scaleTime().domain(xDomain).range([0, this.width]),
+		this.yScale = d3.scaleLinear().domain(yDomain).range([this.height, 0]);
+
+		// Draw the Line.
+		this.line = d3.line()
+									.x(d => this.xScale(d['time']))
+									.y(d => this.yScale(d['temperature']))
+									.curve(d3.curveLinear)
+	}
+
   updateChart() {
     this.getD3Data();
 
@@ -185,7 +188,7 @@ export class WeatherChartComponent implements OnInit, OnChanges {
         .data([this.data])
         .transition()
         .duration(this.updateDuration)
-        .attr('transform', `translate(50, 0)`)
+        .attr('transform', `${this.translatePosition}`)
         .attr('d', this.line);
 
     // Update the Points on the Chart.
@@ -194,7 +197,7 @@ export class WeatherChartComponent implements OnInit, OnChanges {
         .data(this.data)
         .transition()
         .duration(this.updateDuration)
-        .attr('transform', `translate(50, 0)`)
+        .attr('transform', `${this.translatePosition}`)
         .attr('cx', d => this.xScale(d['time']))
         .attr('cy', d => this.yScale(d['temperature']))
         .attr('r', 4.5);

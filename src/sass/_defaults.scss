@@ -126,3 +126,12 @@ input:checked + .slider:before {
 .slider.round:before {
   border-radius: 50%;
 }
+
+select {
+	background-color: $dark-grey;
+	border: 1px solid $light-grey;
+	border-radius: 5px;
+	color: $black;
+	font-weight: bold;
+	height: 25px;
+}
