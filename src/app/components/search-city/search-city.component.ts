@@ -1,6 +1,6 @@
 import { Component, Input, OnInit } from '@angular/core';
 import { Store } from '@ngrx/store';
-import { Observable } from 'rxjs/Rx';
+import { Observable, Observer } from 'rxjs/Rx';
 import * as moment from 'moment';
 import * as constants from '../../constants/constants';
 import { GetWeatherService } from '../../services/get-weather.service';
@@ -127,57 +127,61 @@ export class SearchCityComponent implements OnInit {
 		this.loading = true;
 
 		setTimeout(() => {
-			this.weather.getCities(this.cityObj).subscribe(result => {
-				this.result = result[0];
-
-				this.weather.getData(this.result.lat, this.result.lng).subscribe(weatherResult => {
-					if (Object.keys(weatherResult).length > 0) {
-						this.loading = false;
-						this.isData = true;
-					} else {
-						return;
-					}
-
-					const today = weatherResult['currently'],
-								tomorrow = weatherResult['daily']['data'][1],
-								dailyChartData = weatherResult['daily']['data'];
-
-					this.chartData = [];
-
-					// Determine length of remaining days for Long Term Forecast.
-					this.longTermForecast = weatherResult['daily']['data'].slice(2, weatherResult['daily']['data'].length);
-
-					// Today/Current
-					this.cityWeather.today.time = this.convertUnixDate(today.time, `${this.dateString} @ ${this.timeString}`);
-					this.cityWeather.today.summary = today.summary;
-					this.cityWeather.today.icon = today.icon;
-					this.cityWeather.today.temperature = this.roundFigures(today.temperature);
-					this.cityWeather.today.windSpeed = this.roundFigures(today.windSpeed);
-					this.cityWeather.today.windDirection = this.degToCompass(today.windBearing);
-					this.cityWeather.today.humidity = this.roundFigures(today.humidity * 100);
-					this.cityWeather.today.sunriseSunset.sunrise = this.convertUnixDate(weatherResult['daily'].data[0].sunriseTime, this.timeString);
-					this.cityWeather.today.sunriseSunset.sunset = this.convertUnixDate(weatherResult['daily'].data[0].sunsetTime, this.timeString);
-
-					// Tomorrow
-					this.cityWeather.tomorrow.summary = tomorrow.summary;
-					this.cityWeather.tomorrow.icon = tomorrow.icon;
-					this.cityWeather.tomorrow.temperature = this.roundFigures(tomorrow.temperatureHigh);
-					this.cityWeather.tomorrow.windSpeed = this.roundFigures(tomorrow.windSpeed);
-					this.cityWeather.tomorrow.windDirection = this.degToCompass(today.windBearing);
-					this.cityWeather.tomorrow.humidity = this.roundFigures(tomorrow.humidity * 100);
-					this.cityWeather.tomorrow.sunriseSunset.sunrise = this.convertUnixDate(weatherResult['daily'].data[1].sunriseTime, this.timeString);
-					this.cityWeather.tomorrow.sunriseSunset.sunset = this.convertUnixDate(weatherResult['daily'].data[1].sunsetTime, this.timeString);
-
-					// Hourly Chart Data
-					for (let x in this.longTermForecast) {
-						this.chartData.push({
-							time: this.longTermForecast[x].time,
-							temperature: this.roundFigures(this.longTermForecast[x].temperatureHigh)
-						})
-					}
-				});
-			});
+			this.weather.getCities(this.cityObj).subscribe(
+				(result) => { this.result = result[0] },
+				(err) => { console.log(err) },
+				() => { this.getWeatherData(); }
+			);
 		}, 0);
+	}
+
+	getWeatherData() {
+		this.weather.getData(this.result.lat, this.result.lng).subscribe(weatherResult => {
+			if (Object.keys(weatherResult).length > 0) {
+				this.loading = false;
+				this.isData = true;
+			} else {
+				return;
+			}
+
+			const today = weatherResult['currently'],
+						tomorrow = weatherResult['daily']['data'][1],
+						dailyChartData = weatherResult['daily']['data'];
+
+			this.chartData = [];
+
+			// Determine length of remaining days for Long Term Forecast.
+			this.longTermForecast = weatherResult['daily']['data'].slice(2, weatherResult['daily']['data'].length);
+
+			// Today/Current
+			this.cityWeather.today.time = this.convertUnixDate(today.time, `${this.dateString} @ ${this.timeString}`);
+			this.cityWeather.today.summary = today.summary;
+			this.cityWeather.today.icon = today.icon;
+			this.cityWeather.today.temperature = this.roundFigures(today.temperature);
+			this.cityWeather.today.windSpeed = this.roundFigures(today.windSpeed);
+			this.cityWeather.today.windDirection = this.degToCompass(today.windBearing);
+			this.cityWeather.today.humidity = this.roundFigures(today.humidity * 100);
+			this.cityWeather.today.sunriseSunset.sunrise = this.convertUnixDate(weatherResult['daily'].data[0].sunriseTime, this.timeString);
+			this.cityWeather.today.sunriseSunset.sunset = this.convertUnixDate(weatherResult['daily'].data[0].sunsetTime, this.timeString);
+
+			// Tomorrow
+			this.cityWeather.tomorrow.summary = tomorrow.summary;
+			this.cityWeather.tomorrow.icon = tomorrow.icon;
+			this.cityWeather.tomorrow.temperature = this.roundFigures(tomorrow.temperatureHigh);
+			this.cityWeather.tomorrow.windSpeed = this.roundFigures(tomorrow.windSpeed);
+			this.cityWeather.tomorrow.windDirection = this.degToCompass(today.windBearing);
+			this.cityWeather.tomorrow.humidity = this.roundFigures(tomorrow.humidity * 100);
+			this.cityWeather.tomorrow.sunriseSunset.sunrise = this.convertUnixDate(weatherResult['daily'].data[1].sunriseTime, this.timeString);
+			this.cityWeather.tomorrow.sunriseSunset.sunset = this.convertUnixDate(weatherResult['daily'].data[1].sunsetTime, this.timeString);
+
+			// Hourly Chart Data
+			for (let x in this.longTermForecast) {
+				this.chartData.push({
+					time: this.longTermForecast[x].time,
+					temperature: this.roundFigures(this.longTermForecast[x].temperatureHigh)
+				})
+			}
+		});
 	}
 
 	roundFigures(num) {
